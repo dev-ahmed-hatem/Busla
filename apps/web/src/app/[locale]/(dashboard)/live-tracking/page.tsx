@@ -1,8 +1,5 @@
-import { useTranslations } from "next-intl";
-
-import { Placeholder } from "@/components/ui/placeholder";
+import { LiveTrackingView } from "@/components/live-tracking/live-tracking-view";
 
 export default function LiveTrackingPage() {
-  const t = useTranslations("nav");
-  return <Placeholder title={t("liveTracking")} />;
+  return <LiveTrackingView />;
 }

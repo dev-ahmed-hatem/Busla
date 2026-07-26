@@ -107,5 +107,26 @@
     "selected": "{count} محدد",
     "clearSelection": "إلغاء التحديد"
   },
+  "buses": {
+    "title": "إدارة الحافلات",
+    "subtitle": "أدر أسطول حافلات مدرستك، وتابع حالة تشغيل المركبات وجداول الصيانة لضمان جاهزية المسارات اليومية.",
+    "busList": "قائمة الحافلات",
+    "filters": { "all": "الكل", "inService": "في الخدمة", "maintenance": "صيانة", "issue": "عطل" },
+    "addBus": "إضافة حافلة",
+    "filter": "تصفية",
+    "search": "بحث",
+    "cols": {
+      "series": "التسلسل",
+      "busNum": "رقم الحافلة",
+      "license": "رقم اللوحة",
+      "route": "المسار",
+      "lastMaintenance": "آخر صيانة",
+      "status": "الحالة",
+      "breakdown": "العطل",
+      "actions": "إجراءات"
+    },
+    "resolve": "حل",
+    "sendToMaintenance": "صيانة"
+  },
   "common": { "loading": "جارٍ التحميل…", "search": "بحث" }
 }

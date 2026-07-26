@@ -107,5 +107,26 @@
     "selected": "{count} selected",
     "clearSelection": "Clear selection"
   },
+  "buses": {
+    "title": "Buses Management",
+    "subtitle": "Manage your school bus fleet, track vehicle operational status, and monitor maintenance schedules to ensure daily route readiness.",
+    "busList": "Bus List",
+    "filters": { "all": "All", "inService": "In Service", "maintenance": "Maintenance", "issue": "Issue" },
+    "addBus": "Add Bus",
+    "filter": "Filter",
+    "search": "Search",
+    "cols": {
+      "series": "Series",
+      "busNum": "Bus num",
+      "license": "License Num",
+      "route": "Route",
+      "lastMaintenance": "Last maintenance",
+      "status": "Status",
+      "breakdown": "Breakdown",
+      "actions": "Actions"
+    },
+    "resolve": "Resolve",
+    "sendToMaintenance": "Maintenance"
+  },
   "common": { "loading": "Loading…", "search": "Search" }
 }

@@ -63,3 +63,6 @@ contracts/.cache/
 !packages/api-client-ts/src/generated/**
 !flutter_packages/busla_core/lib/api/generated/
 !flutter_packages/busla_core/lib/api/generated/**
+
+# ui screens
+design/

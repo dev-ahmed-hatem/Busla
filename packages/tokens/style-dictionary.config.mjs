@@ -5,7 +5,7 @@
  *   - dist/tokens.json  (flat reference)
  *
  * This is the single source that keeps web + mobile colours (and the status-colour
- * system) identical. Edit tokens/*.json, then `pnpm --filter @busla/tokens build`.
+ * system) identical. Edit tokens/*.json, then `npm run build --workspace @busla/tokens`.
  */
 
 /** Custom Dart format: a `BuslaTokens` class of `Color`/double constants. */

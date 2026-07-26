@@ -10,6 +10,6 @@ mkdir -p "$OUT"
 
 echo "→ Generating TS types from $SPEC"
 # openapi-typescript emits fully-typed paths/components; runtime fetch is via openapi-fetch.
-pnpm --filter @busla/api-client-ts exec openapi-typescript "$SPEC" -o "$OUT/schema.ts"
+npm exec --workspace @busla/api-client-ts -- openapi-typescript "$SPEC" -o "$OUT/schema.ts"
 
 echo "✓ TS client generated → $OUT/schema.ts"

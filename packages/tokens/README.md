@@ -8,7 +8,7 @@ in `tokens/*.json` and built to:
 - `dist/tokens.json` — flat reference.
 
 ```bash
-pnpm --filter @busla/tokens build
+npm run build --workspace @busla/tokens
 ```
 
 > Colors are calibrated placeholders derived from the Figma screens. Refine exact hex/spacing

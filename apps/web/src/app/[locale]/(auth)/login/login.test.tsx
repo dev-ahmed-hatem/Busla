@@ -20,7 +20,6 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-// eslint-disable-next-line import/first
 import LoginPage from "./page";
 
 function renderPage() {

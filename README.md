@@ -28,7 +28,7 @@ palette and status-color system.
 
 | Island | Manager | Runner |
 |---|---|---|
-| TypeScript | pnpm workspaces | Turborepo |
+| TypeScript | npm workspaces | Turborepo |
 | Python | Poetry | Makefile / pytest |
 | Dart | Flutter SDK | Melos |
 
@@ -36,7 +36,7 @@ palette and status-color system.
 
 ```bash
 cp .env.example .env         # fill in Google Maps keys etc.
-make install                 # pnpm install + poetry install + melos bootstrap
+make install                 # npm install + poetry install + melos bootstrap
 make up                      # docker compose: postgis, redis, api, workers, web
 make migrate                 # apply DB migrations
 ```
@@ -54,7 +54,7 @@ CI fails if the contract or generated clients drift (`make diff-check`).
 
 ## Prerequisites
 
-Docker, Node ≥ 20 + pnpm, Python 3.11 + Poetry, Flutter SDK. On Windows, run `make` targets
+Docker, Node ≥ 20 (npm), Python 3.11 + Poetry, Flutter SDK. On Windows, run `make` targets
 from Git Bash.
 
 ## Roadmap

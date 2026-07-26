@@ -75,7 +75,7 @@ export function UsersView() {
     {
       key: "actions",
       header: t("cols.actions"),
-      render: (r) => (
+      render: () => (
         <div className="flex items-center gap-1">
           <button
             type="button"

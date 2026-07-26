@@ -22,13 +22,13 @@
     "zod": "^3.24.1",
     "@hookform/resolvers": "^3.10.0",
     "lucide-react": "^0.469.0",
-    "@busla/api-client-ts": "workspace:*",
-    "@busla/ui": "workspace:*",
-    "@busla/tokens": "workspace:*"
+    "@busla/api-client-ts": "*",
+    "@busla/ui": "*",
+    "@busla/tokens": "*"
   },
   "devDependencies": {
-    "@busla/config-ts": "workspace:*",
-    "@busla/config-eslint": "workspace:*",
+    "@busla/config-ts": "*",
+    "@busla/config-eslint": "*",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",

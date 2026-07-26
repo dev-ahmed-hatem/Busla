@@ -1,7 +1,7 @@
 "use client";
 
 import { StatusPill } from "@busla/ui";
-import { Bus, Check, ChevronDown, Eye, Filter, Plus, Search, Trash2, Wrench } from "lucide-react";
+import { Bus, Check, ChevronDown, Eye, Plus, Search, Trash2, Wrench } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 

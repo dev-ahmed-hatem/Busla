@@ -60,25 +60,25 @@ diff-check: ## Fail if the contract / generated clients drift (used in CI)
 
 ## ----- Cross-island quality -----
 install: ## Install all dependencies (TS + Python + Dart)
-	pnpm install
+	npm install
 	cd apps/api && poetry install
 	melos bootstrap
 
 test: ## Run all test suites
-	pnpm test
+	npm test
 	cd apps/api && poetry run pytest
 	melos run test
 
 lint: ## Lint all islands
-	pnpm lint
+	npm run lint
 	cd apps/api && poetry run ruff check .
 	melos run analyze
 
 typecheck: ## Typecheck TS + Python
-	pnpm typecheck
+	npm run typecheck
 	cd apps/api && poetry run mypy .
 
 fmt: ## Format all code
-	pnpm exec prettier --write .
+	npx prettier --write .
 	cd apps/api && poetry run ruff format .
 	melos run format

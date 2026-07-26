@@ -12,9 +12,29 @@
   },
   "auth": {
     "login": "Sign in",
+    "signingIn": "Signing in…",
     "email": "Email",
     "password": "Password",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    "invalidCredentials": "Invalid email or password.",
+    "emailRequired": "Email is required.",
+    "emailInvalid": "Enter a valid email address.",
+    "passwordRequired": "Password is required.",
+    "genericError": "Something went wrong. Please try again.",
+    "forgotTitle": "Reset your password",
+    "forgotSubtitle": "Enter your email and we'll send reset instructions.",
+    "sendResetLink": "Send reset link",
+    "sending": "Sending…",
+    "resetEmailSent": "If an account exists for that email, reset instructions are on the way.",
+    "backToLogin": "Back to sign in"
+  },
+  "roles": {
+    "ADMIN": "Admin",
+    "DISPATCHER": "Dispatcher",
+    "VIEWER": "Viewer",
+    "DRIVER": "Driver",
+    "SUPERVISOR": "Supervisor",
+    "PARENT": "Parent"
   },
   "dashboard": {
     "title": "Dashboard",

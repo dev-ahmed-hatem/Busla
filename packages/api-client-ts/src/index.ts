@@ -14,9 +14,19 @@ export interface BuslaClientOptions {
   baseUrl: string;
   /** Returns the current access token (or null when unauthenticated). */
   getToken?: () => string | null | undefined;
+  /**
+   * Called once when a request gets a 401. Should refresh the session (single-flight
+   * upstream) and resolve with a fresh access token, or null if refresh failed. When a
+   * token is returned the original request is retried once with it.
+   */
+  onUnauthorized?: () => Promise<string | null>;
 }
 
-export function createBuslaClient({ baseUrl, getToken }: BuslaClientOptions): BuslaClient {
+export function createBuslaClient({
+  baseUrl,
+  getToken,
+  onUnauthorized,
+}: BuslaClientOptions): BuslaClient {
   const client = createClient<paths>({ baseUrl });
 
   if (getToken) {
@@ -25,6 +35,29 @@ export function createBuslaClient({ baseUrl, getToken }: BuslaClientOptions): Bu
         const token = getToken();
         if (token) request.headers.set("Authorization", `Bearer ${token}`);
         return request;
+      },
+    });
+  }
+
+  if (onUnauthorized) {
+    // Guard against retry loops: a retried request is never itself retried.
+    const retried = new WeakSet<Request>();
+    client.use({
+      async onResponse({ request, response }) {
+        if (response.status !== 401 || retried.has(request)) return response;
+
+        const token = await onUnauthorized();
+        if (!token) return response;
+
+        try {
+          // clone() must run before the body is consumed; safe for the GETs used today.
+          const retry = request.clone();
+          retry.headers.set("Authorization", `Bearer ${token}`);
+          retried.add(retry);
+          return await fetch(retry);
+        } catch {
+          return response;
+        }
       },
     });
   }

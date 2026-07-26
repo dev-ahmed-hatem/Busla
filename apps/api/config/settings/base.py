@@ -42,6 +42,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "django_filters",
     "corsheaders",
     "drf_spectacular",
@@ -93,14 +94,16 @@ TEMPLATES = [
     },
 ]
 
-# --- Database (PostGIS) ---
+# --- Database ---
+# The DATABASE_URL scheme selects the engine: `postgis://` → PostGIS (Docker/prod),
+# `spatialite://` → SpatiaLite over SQLite (PythonAnywhere first release). django-environ
+# maps both to the correct django.contrib.gis backend, so we don't override ENGINE here.
 DATABASES = {
     "default": env.db_url(
         "DATABASE_URL",
         default="postgis://busla:busla@localhost:5432/busla",
     ),
 }
-DATABASES["default"]["ENGINE"] = "django.contrib.gis.db.backends.postgis"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

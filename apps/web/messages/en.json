@@ -61,5 +61,19 @@
       "available": "Available"
     }
   },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Track trips updates, parent requests, and important alerts",
+    "tabs": {
+      "trips": "Trips",
+      "parentRequests": "Parent Requests",
+      "shiftReadiness": "Shift Readiness"
+    },
+    "groups": { "today": "Today", "yesterday": "Yesterday", "earlier": "Earlier" },
+    "viewRequest": "View Request",
+    "findSubstitute": "Find substitute",
+    "sendReminder": "Send reminder",
+    "driversCheckedIn": "{checked} / {total} drivers checked in"
+  },
   "common": { "loading": "Loading…", "search": "Search" }
 }

@@ -61,5 +61,19 @@
       "available": "المتاح"
     }
   },
+  "notifications": {
+    "title": "الإشعارات",
+    "subtitle": "تابع تحديثات الرحلات وطلبات أولياء الأمور والتنبيهات المهمة",
+    "tabs": {
+      "trips": "الرحلات",
+      "parentRequests": "طلبات أولياء الأمور",
+      "shiftReadiness": "جاهزية الورديّة"
+    },
+    "groups": { "today": "اليوم", "yesterday": "أمس", "earlier": "سابقًا" },
+    "viewRequest": "عرض الطلب",
+    "findSubstitute": "إيجاد بديل",
+    "sendReminder": "إرسال تذكير",
+    "driversCheckedIn": "{checked} / {total} سائق سجّلوا الحضور"
+  },
   "common": { "loading": "جارٍ التحميل…", "search": "بحث" }
 }

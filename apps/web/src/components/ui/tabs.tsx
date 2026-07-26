@@ -8,6 +8,52 @@ export interface TabItem {
   count?: number;
 }
 
+/** Segmented pill tabs (active = white pill on a grey track). */
+export function PillTabs({
+  items,
+  value,
+  onValueChange,
+  className,
+}: {
+  items: TabItem[];
+  value: string;
+  onValueChange: (key: string) => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn("inline-flex gap-1 rounded-lg bg-slate-100 p-1", className)} role="tablist">
+      {items.map((item) => {
+        const active = item.key === value;
+        return (
+          <button
+            key={item.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onValueChange(item.key)}
+            className={cn(
+              "flex items-center gap-2 rounded-md px-4 py-1.5 text-sm font-medium transition-colors",
+              active ? "bg-surface text-brand-navy shadow-sm" : "text-slate-500 hover:text-slate-700",
+            )}
+          >
+            {item.label}
+            {typeof item.count === "number" && (
+              <span
+                className={cn(
+                  "grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-xs font-semibold",
+                  active ? "bg-brand-navy text-white" : "bg-slate-200 text-slate-500",
+                )}
+              >
+                {item.count}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Underline tab bar with optional count badges (Notifications, profile modals). */
 export function Tabs({
   items,

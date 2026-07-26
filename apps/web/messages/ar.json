@@ -75,5 +75,37 @@
     "sendReminder": "إرسال تذكير",
     "driversCheckedIn": "{checked} / {total} سائق سجّلوا الحضور"
   },
+  "users": {
+    "title": "إدارة المستخدمين",
+    "subtitle": "أضف واعرض وأدر الطلاب والسائقين والمشرفين عبر أسطولك.",
+    "tabs": { "students": "الطلاب", "drivers": "السائقون", "supervisors": "المشرفون" },
+    "heading": {
+      "students": "بيانات الطلاب",
+      "drivers": "بيانات السائقين",
+      "supervisors": "بيانات المشرفين"
+    },
+    "person": { "students": "الطالب", "drivers": "السائق", "supervisors": "المشرفة" },
+    "add": {
+      "students": "إضافة طالب",
+      "drivers": "إضافة سائق",
+      "supervisors": "إضافة مشرفة"
+    },
+    "cols": {
+      "series": "التسلسل",
+      "phone": "رقم الهاتف",
+      "area": "المنطقة",
+      "route": "المسار",
+      "bus": "الحافلة",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "search": "بحث",
+    "filter": "تصفية",
+    "uploadFile": "رفع ملف",
+    "export": "تصدير",
+    "deleteAll": "حذف الكل",
+    "selected": "{count} محدد",
+    "clearSelection": "إلغاء التحديد"
+  },
   "common": { "loading": "جارٍ التحميل…", "search": "بحث" }
 }

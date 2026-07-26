@@ -75,5 +75,37 @@
     "sendReminder": "Send reminder",
     "driversCheckedIn": "{checked} / {total} drivers checked in"
   },
+  "users": {
+    "title": "Users Management",
+    "subtitle": "Add, view, and manage students, drivers, and supervisors across your fleet.",
+    "tabs": { "students": "Students", "drivers": "Drivers", "supervisors": "Supervisors" },
+    "heading": {
+      "students": "Students Data",
+      "drivers": "Driver Data",
+      "supervisors": "Supervisor Data"
+    },
+    "person": { "students": "Student", "drivers": "Driver", "supervisors": "Nanny" },
+    "add": {
+      "students": "Add Student",
+      "drivers": "Add Driver",
+      "supervisors": "Add Supervisor"
+    },
+    "cols": {
+      "series": "Series",
+      "phone": "Phone Number",
+      "area": "Area",
+      "route": "Route",
+      "bus": "Bus",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "search": "Search",
+    "filter": "Filter",
+    "uploadFile": "Upload File",
+    "export": "Export",
+    "deleteAll": "Delete All",
+    "selected": "{count} selected",
+    "clearSelection": "Clear selection"
+  },
   "common": { "loading": "Loading…", "search": "Search" }
 }

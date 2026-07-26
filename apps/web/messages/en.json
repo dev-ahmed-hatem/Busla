@@ -174,6 +174,8 @@
     "addBus": "Add Bus",
     "filter": "Filter",
     "search": "Search",
+    "view": "View",
+    "delete": "Delete",
     "cols": {
       "series": "Series",
       "busNum": "Bus num",
@@ -257,5 +259,10 @@
     "area": "Area",
     "statusFilter": "Status"
   },
-  "common": { "loading": "Loading…", "search": "Search" }
+  "common": {
+    "loading": "Loading…",
+    "search": "Search",
+    "previous": "Previous",
+    "next": "Next"
+  }
 }

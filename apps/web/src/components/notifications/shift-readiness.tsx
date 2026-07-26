@@ -15,7 +15,7 @@ import { ROW_CLASS, UnreadDot } from "./parts";
 const DETAIL_TONE: Record<CheckInState, string> = {
   no_response: "text-status-issue",
   pending: "text-status-delayed",
-  checked_in: "text-status-ontime",
+  checked_in: "text-slate-400",
 };
 
 function Action({ state }: { state: CheckInState }) {
@@ -54,7 +54,14 @@ function Row({ item }: { item: DriverCheckin }) {
         <div className="truncate text-xs text-slate-500">{item.bus}</div>
       </div>
       <Action state={item.state} />
-      <span className={cn("whitespace-nowrap text-xs font-medium", DETAIL_TONE[item.state])}>
+      <span
+        className={cn(
+          "whitespace-nowrap text-xs font-medium",
+          DETAIL_TONE[item.state],
+          // rows with an action button hide the redundant detail text on small screens
+          item.state !== "checked_in" && "hidden sm:inline",
+        )}
+      >
         {item.detail}
       </span>
       <UnreadDot />

@@ -2,8 +2,8 @@ import { Bus, GraduationCap, UserCog, UserRound, type LucideIcon } from "lucide-
 import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/card";
-import { ProgressBar } from "@/components/ui/progress-bar";
 import type { KpiCard as KpiData } from "@/lib/mock/dashboard";
+import { cn } from "@/lib/utils/cn";
 
 const ICONS: Record<string, LucideIcon> = {
   buses: Bus,
@@ -31,25 +31,30 @@ export function KpiCard({ data }: { data: KpiData }) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-2 text-sm">
+      <div className="mt-4 flex items-start justify-between gap-2">
         {data.subs.map((s) => (
           <div key={s.label} className="min-w-0">
-            <span
-              className={
-                s.tone === "good"
-                  ? "font-semibold text-status-ontime"
-                  : "font-semibold text-status-issue"
-              }
+            <div
+              className={cn(
+                "text-xl font-bold",
+                s.tone === "good" ? "text-status-ontime" : "text-status-issue",
+              )}
             >
               {s.value}
-            </span>
-            <span className="ms-1 text-xs text-slate-500">{s.label}</span>
+            </div>
+            <div className="truncate text-xs text-slate-500">{s.label}</div>
           </div>
         ))}
       </div>
 
       <div className="mt-3 flex items-center gap-2">
-        <ProgressBar percent={data.percent} tone="onTime" />
+        {/* utilisation: green fill over the red (out-of-service) remainder */}
+        <div className="h-1.5 flex-1 overflow-hidden rounded-pill bg-status-issue">
+          <div
+            className="h-full rounded-pill bg-status-ontime"
+            style={{ width: `${data.percent}%` }}
+          />
+        </div>
         <span className="text-xs font-medium text-slate-500">{data.percent}%</span>
       </div>
     </Card>

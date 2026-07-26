@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronDown, Search } from "lucide-react";
+import { Bell, ChevronDown, Menu, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Fragment } from "react";
 
@@ -65,20 +65,32 @@ function Breadcrumb() {
   );
 }
 
-export function AppHeader() {
+export function AppHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const t = useTranslations("common");
   const tRoles = useTranslations("roles");
   const user = useSession((s) => s.user);
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-surface px-6">
-      <Link href="/dashboard" className="w-44 shrink-0 text-xl font-bold text-brand-navy">
+    <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-surface px-4 sm:gap-4 sm:px-6">
+      <button
+        type="button"
+        onClick={onMenuClick}
+        aria-label="Open menu"
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-md text-slate-600 hover:bg-slate-100 lg:hidden"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      <Link
+        href="/dashboard"
+        className="shrink-0 text-xl font-bold text-brand-navy lg:w-44"
+      >
         BUS<span className="text-brand-amber">L</span>A
       </Link>
 
       <Breadcrumb />
 
-      <div className="mx-auto flex w-full max-w-md flex-1 justify-center">
+      <div className="mx-auto hidden w-full max-w-md flex-1 justify-center md:flex">
         <div className="relative w-full">
           <Search className="pointer-events-none absolute inset-y-0 start-3 my-auto h-4 w-4 text-slate-400" />
           <input
@@ -89,6 +101,8 @@ export function AppHeader() {
           />
         </div>
       </div>
+
+      <div className="flex-1 md:hidden" />
 
       <LocaleSwitch />
 

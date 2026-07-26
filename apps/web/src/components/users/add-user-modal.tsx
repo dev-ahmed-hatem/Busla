@@ -13,7 +13,7 @@ import type { UserTab } from "@/lib/mock/users";
 function PhotoUploader() {
   const t = useTranslations("users.addModal");
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col items-center gap-2 text-center">
       <div className="relative grid h-16 w-16 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-400">
         <ImagePlus className="h-6 w-6" />
         <span className="absolute -end-0.5 -bottom-0.5 grid h-5 w-5 place-items-center rounded-full bg-brand-navy text-white">
@@ -52,7 +52,7 @@ function StudentForm() {
           <FormField label={t("fields.dob")} required>
             <Input type="date" />
           </FormField>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label={t("fields.grade")} required>
               <Select placeholder="Select Grade">
                 <option>Primary 1</option>
@@ -117,7 +117,7 @@ function DriverForm() {
         <FormField label={t("fields.fullName")} required>
           <Input placeholder="e.g., Samy Ahmed Ali" />
         </FormField>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField label={t("fields.phone")} required>
             <Input placeholder="e.g., 01123456789" />
           </FormField>
@@ -131,7 +131,7 @@ function DriverForm() {
         <FormField label={t("fields.license")} required>
           <Input placeholder="e.g., 123456789" />
         </FormField>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField label={t("fields.licenseExpiry")} required>
             <Input type="date" />
           </FormField>
@@ -154,7 +154,7 @@ function SupervisorForm() {
         <FormField label={t("fields.fullName")} required>
           <Input placeholder="e.g., Mona Mahmoud Ali" />
         </FormField>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField label={t("fields.phone")} required>
             <Input placeholder="e.g., 01123456789" />
           </FormField>
@@ -199,10 +199,10 @@ export function AddUserModal({
       subtitle={t(`addModal.subtitle.${tab}`)}
       footer={
         <>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" className="flex-1" onClick={onClose}>
             {t("cancel")}
           </Button>
-          <Button variant="primary">
+          <Button variant="primary" className="flex-1">
             <Plus className="h-4 w-4" />
             {t(`add.${tab}`)}
           </Button>

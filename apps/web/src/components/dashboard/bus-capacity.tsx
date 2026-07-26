@@ -64,7 +64,7 @@ export function BusCapacity() {
           </tbody>
         </table>
       </div>
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex justify-center border-t border-border pt-4">
         <Pagination page={page} pageCount={5} onPageChange={setPage} />
       </div>
     </Card>

@@ -168,7 +168,7 @@ export function UsersView() {
           onSelectedChange={setSelected}
         />
 
-        <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex justify-center border-t border-border pt-4">
           <Pagination page={page} pageCount={10} onPageChange={setPage} />
         </div>
       </Card>

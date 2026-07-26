@@ -10,9 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Tabs } from "@/components/ui/tabs";
-import { BUS_PROFILE, type HealthMeter } from "@/lib/mock/buses";
+import { BUS_PROFILE, type BusStatus, type HealthMeter } from "@/lib/mock/buses";
+import { cn } from "@/lib/utils/cn";
 
 const p = BUS_PROFILE;
+
+const STATUS_LABEL_KEY: Record<BusStatus, string> = {
+  "In Service": "filters.inService",
+  Maintenance: "filters.maintenance",
+  Issue: "filters.issue",
+};
 
 function InfoRow({
   icon: Icon,
@@ -32,12 +39,18 @@ function InfoRow({
   );
 }
 
+const METER_TEXT: Record<HealthMeter["tone"], string> = {
+  issue: "text-status-issue",
+  delayed: "text-status-delayed",
+  onTime: "text-status-ontime",
+};
+
 function Meter({ label, meter }: { label: string; meter: HealthMeter }) {
   return (
     <div className="py-3">
-      <div className="mb-1.5 flex items-center justify-between text-sm">
+      <div className="mb-1.5 flex items-center justify-between gap-2 text-sm">
         <span className="text-slate-500">{label}</span>
-        <span className="font-medium text-brand-navy">{meter.label}</span>
+        <span className={cn("font-medium", METER_TEXT[meter.tone])}>{meter.label}</span>
       </div>
       <ProgressBar percent={meter.percent} tone={meter.tone} />
     </div>
@@ -46,6 +59,7 @@ function Meter({ label, meter }: { label: string; meter: HealthMeter }) {
 
 export function BusProfileModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useTranslations("buses.profile");
+  const tf = useTranslations("buses");
   const [tab, setTab] = useState("info");
 
   return (
@@ -66,7 +80,7 @@ export function BusProfileModal({ open, onClose }: { open: boolean; onClose: () 
               <Bus className="h-9 w-9" />
             </span>
             <div className="font-semibold text-brand-navy">{p.name}</div>
-            <StatusPill status={p.status} />
+            <StatusPill status={p.status} label={tf(STATUS_LABEL_KEY[p.status])} />
             <div className="mt-2 flex w-full flex-col gap-2">
               <Button variant="success">
                 <Check className="h-4 w-4" />

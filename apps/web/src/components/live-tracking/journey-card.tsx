@@ -47,8 +47,8 @@ export function JourneyCard({
       <div className="relative my-3 h-1.5 rounded-pill bg-slate-100">
         <div className="h-full rounded-pill" style={{ width: `${progress}%`, background: color }} />
         <span
-          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${progress}%` }}
+          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rtl:translate-x-1/2"
+          style={{ insetInlineStart: `${progress}%` }}
         >
           <Bus className="h-3.5 w-3.5" style={{ color }} />
         </span>
@@ -69,14 +69,20 @@ export function JourneyCard({
         </span>
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-t border-border pt-3 text-xs">
-        <span className="inline-flex items-center gap-1.5">
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3 text-xs">
+        <span className="inline-flex min-w-0 items-center gap-1.5">
           <Avatar name={journey.driver} size={22} />
-          <span className="text-slate-600">{journey.driver}</span>
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="text-[10px] text-slate-400">{t("cols.driver")}</span>
+            <span className="truncate text-slate-600">{journey.driver}</span>
+          </span>
         </span>
-        <span className="inline-flex items-center gap-1.5">
+        <span className="inline-flex min-w-0 items-center gap-1.5">
           <Avatar name={journey.nanny} size={22} />
-          <span className="text-slate-600">{journey.nanny}</span>
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="text-[10px] text-slate-400">{t("cols.nanny")}</span>
+            <span className="truncate text-slate-600">{journey.nanny}</span>
+          </span>
         </span>
       </div>
     </div>

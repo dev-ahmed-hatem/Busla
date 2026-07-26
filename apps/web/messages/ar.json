@@ -174,6 +174,8 @@
     "addBus": "إضافة حافلة",
     "filter": "تصفية",
     "search": "بحث",
+    "view": "عرض",
+    "delete": "حذف",
     "cols": {
       "series": "التسلسل",
       "busNum": "رقم الحافلة",
@@ -257,5 +259,10 @@
     "area": "المنطقة",
     "statusFilter": "الحالة"
   },
-  "common": { "loading": "جارٍ التحميل…", "search": "بحث" }
+  "common": {
+    "loading": "جارٍ التحميل…",
+    "search": "بحث",
+    "previous": "السابق",
+    "next": "التالي"
+  }
 }

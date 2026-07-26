@@ -21,7 +21,10 @@ export function PillTabs({
   className?: string;
 }) {
   return (
-    <div className={cn("inline-flex gap-1 rounded-lg bg-slate-100 p-1", className)} role="tablist">
+    <div
+      className={cn("inline-flex max-w-full gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1", className)}
+      role="tablist"
+    >
       {items.map((item) => {
         const active = item.key === value;
         return (
@@ -67,7 +70,10 @@ export function Tabs({
   className?: string;
 }) {
   return (
-    <div className={cn("flex gap-6 border-b border-border", className)} role="tablist">
+    <div
+      className={cn("flex gap-6 overflow-x-auto border-b border-border", className)}
+      role="tablist"
+    >
       {items.map((item) => {
         const active = item.key === value;
         return (
@@ -78,7 +84,7 @@ export function Tabs({
             aria-selected={active}
             onClick={() => onValueChange(item.key)}
             className={cn(
-              "relative flex items-center gap-2 pb-3 text-sm font-medium transition-colors",
+              "relative flex shrink-0 items-center gap-2 pb-3 text-sm font-medium transition-colors",
               active ? "text-brand-navy" : "text-slate-500 hover:text-slate-700",
             )}
           >
@@ -87,7 +93,7 @@ export function Tabs({
               <span
                 className={cn(
                   "grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-xs font-semibold",
-                  active ? "bg-brand-navy text-white" : "bg-slate-100 text-slate-500",
+                  active ? "bg-brand-navy text-white" : "bg-[#fdecec] text-status-issue",
                 )}
               >
                 {item.count}

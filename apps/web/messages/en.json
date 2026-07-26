@@ -37,9 +37,29 @@
     "PARENT": "Parent"
   },
   "dashboard": {
-    "title": "Dashboard",
-    "healthTitle": "System status",
-    "healthOk": "All systems operational"
+    "kpi": {
+      "buses": "Buses",
+      "drivers": "Drivers",
+      "supervisors": "Supervisors",
+      "students": "Students",
+      "total": "Total"
+    },
+    "mainMap": "Main Map",
+    "openFullMap": "Open Full Map",
+    "actionRequired": "Action Required",
+    "viewAll": "View All",
+    "minAgo": "{mins} min ago",
+    "tripsStatus": "Trips Status Today",
+    "totalTrips": "Total Trips",
+    "today": "Today",
+    "busCapacity": "Bus Capacity Overview",
+    "col": {
+      "busNo": "Bus No.",
+      "route": "Route",
+      "capacity": "Capacity",
+      "occupied": "Occupied",
+      "available": "Available"
+    }
   },
   "common": { "loading": "Loading…", "search": "Search" }
 }

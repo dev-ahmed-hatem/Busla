@@ -37,9 +37,29 @@
     "PARENT": "ولي أمر"
   },
   "dashboard": {
-    "title": "لوحة التحكم",
-    "healthTitle": "حالة النظام",
-    "healthOk": "جميع الأنظمة تعمل"
+    "kpi": {
+      "buses": "الحافلات",
+      "drivers": "السائقون",
+      "supervisors": "المشرفون",
+      "students": "الطلاب",
+      "total": "الإجمالي"
+    },
+    "mainMap": "الخريطة الرئيسية",
+    "openFullMap": "فتح الخريطة كاملة",
+    "actionRequired": "إجراءات مطلوبة",
+    "viewAll": "عرض الكل",
+    "minAgo": "منذ {mins} دقيقة",
+    "tripsStatus": "حالة الرحلات اليوم",
+    "totalTrips": "إجمالي الرحلات",
+    "today": "اليوم",
+    "busCapacity": "نظرة عامة على سعة الحافلات",
+    "col": {
+      "busNo": "رقم الحافلة",
+      "route": "المسار",
+      "capacity": "السعة",
+      "occupied": "المشغول",
+      "available": "المتاح"
+    }
   },
   "common": { "loading": "جارٍ التحميل…", "search": "بحث" }
 }

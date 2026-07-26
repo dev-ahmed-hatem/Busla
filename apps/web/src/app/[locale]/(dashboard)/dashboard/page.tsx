@@ -1,35 +1,33 @@
-"use client";
+import { ActionRequired } from "@/components/dashboard/action-required";
+import { BusCapacity } from "@/components/dashboard/bus-capacity";
+import { KpiCard } from "@/components/dashboard/kpi-card";
+import { MainMap } from "@/components/dashboard/main-map";
+import { TripsDonut } from "@/components/dashboard/trips-donut";
+import { KPI_CARDS } from "@/lib/mock/dashboard";
 
-import { StatusPill } from "@busla/ui";
-import { useTranslations } from "next-intl";
-
-import { useHealth } from "@/lib/api/use-health";
-
-/** Phase-0 walking-skeleton screen: fetches /health via the generated client. */
+/** Operations overview (design Screenshot 364). Runs on mock data until the module APIs land. */
 export default function DashboardPage() {
-  const t = useTranslations("dashboard");
-  const { data, isLoading, isError } = useHealth();
-
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-brand-navy">{t("title")}</h1>
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {KPI_CARDS.map((kpi) => (
+          <KpiCard key={kpi.key} data={kpi} />
+        ))}
+      </div>
 
-      <section className="max-w-md rounded-card border border-border bg-surface p-6 shadow-sm">
-        <h2 className="mb-3 text-lg font-semibold">{t("healthTitle")}</h2>
-        {isLoading && <p className="text-sm text-slate-500">…</p>}
-        {isError && <StatusPill status="issue" label="API unreachable" />}
-        {data && (
-          <div className="flex flex-col gap-2">
-            <StatusPill status={data.status === "ok" ? "on_time" : "issue"} label={t("healthOk")} />
-            <dl className="mt-2 grid grid-cols-2 gap-1 text-sm text-slate-600">
-              <dt>Service</dt>
-              <dd className="text-end">{data.service}</dd>
-              <dt>Version</dt>
-              <dd className="text-end">{data.version}</dd>
-            </dl>
-          </div>
-        )}
-      </section>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <MainMap />
+        </div>
+        <ActionRequired />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <TripsDonut />
+        <div className="lg:col-span-2">
+          <BusCapacity />
+        </div>
+      </div>
     </div>
   );
 }

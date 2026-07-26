@@ -2,6 +2,7 @@
 
 import { StatusPill } from "@busla/ui";
 import { Bus, Check, Gauge, IdCard, Trash2, User, Users, Wrench, X, type LucideIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
@@ -44,6 +45,7 @@ function Meter({ label, meter }: { label: string; meter: HealthMeter }) {
 }
 
 export function BusProfileModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const t = useTranslations("buses.profile");
   const [tab, setTab] = useState("info");
 
   return (
@@ -68,11 +70,11 @@ export function BusProfileModal({ open, onClose }: { open: boolean; onClose: () 
             <div className="mt-2 flex w-full flex-col gap-2">
               <Button variant="success">
                 <Check className="h-4 w-4" />
-                Resolve
+                {t("resolve")}
               </Button>
               <Button variant="dangerOutline">
                 <Trash2 className="h-4 w-4" />
-                Delete Bus
+                {t("deleteBus")}
               </Button>
             </div>
           </div>
@@ -81,9 +83,9 @@ export function BusProfileModal({ open, onClose }: { open: boolean; onClose: () 
         <div className="min-w-0 flex-1">
           <Tabs
             items={[
-              { key: "info", label: "Info" },
-              { key: "route", label: "Route" },
-              { key: "maintenance", label: "Maintenance", count: p.openMaintenance },
+              { key: "info", label: t("tabs.info") },
+              { key: "route", label: t("tabs.route") },
+              { key: "maintenance", label: t("tabs.maintenance"), count: p.openMaintenance },
             ]}
             value={tab}
             onValueChange={setTab}
@@ -94,7 +96,7 @@ export function BusProfileModal({ open, onClose }: { open: boolean; onClose: () 
             <div>
               <InfoRow
                 icon={User}
-                label="Driver"
+                label={t("info.driver")}
                 value={
                   <span className="inline-flex items-center gap-2">
                     <Avatar name={p.info.driver} size={24} />
@@ -102,29 +104,29 @@ export function BusProfileModal({ open, onClose }: { open: boolean; onClose: () 
                   </span>
                 }
               />
-              <InfoRow icon={Bus} label="Bus Model" value={p.info.model} />
-              <InfoRow icon={IdCard} label="Bus Plate" value={<span dir="rtl">{p.info.plate}</span>} />
-              <InfoRow icon={Users} label="Capacity" value={p.info.capacity} />
+              <InfoRow icon={Bus} label={t("info.model")} value={p.info.model} />
+              <InfoRow icon={IdCard} label={t("info.plate")} value={<span dir="rtl">{p.info.plate}</span>} />
+              <InfoRow icon={Users} label={t("info.capacity")} value={p.info.capacity} />
             </div>
           )}
 
           {tab === "route" && (
             <div>
-              <InfoRow icon={Bus} label="Route" value={p.route.route} />
-              <InfoRow icon={Gauge} label="Odometer (Current KM)" value={p.route.odometer} />
+              <InfoRow icon={Bus} label={t("route.route")} value={p.route.route} />
+              <InfoRow icon={Gauge} label={t("route.odometer")} value={p.route.odometer} />
             </div>
           )}
 
           {tab === "maintenance" && (
             <div>
-              <InfoRow icon={Wrench} label="Breakdown" value={p.maintenance.breakdown} />
+              <InfoRow icon={Wrench} label={t("maintenance.breakdown")} value={p.maintenance.breakdown} />
               <InfoRow
                 icon={Wrench}
-                label="Last maintenance"
+                label={t("maintenance.last")}
                 value={<span className="text-status-delayed">{p.maintenance.last}</span>}
               />
-              <Meter label="Oil Health" meter={p.maintenance.oil} />
-              <Meter label="Tire Life" meter={p.maintenance.tire} />
+              <Meter label={t("maintenance.oil")} meter={p.maintenance.oil} />
+              <Meter label={t("maintenance.tire")} meter={p.maintenance.tire} />
             </div>
           )}
         </div>

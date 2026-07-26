@@ -1,12 +1,14 @@
 import { TONE_VAR, toneFor } from "@busla/ui";
 import { Bus, ChevronDown, Minus, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-import { MAP_PINS, ZONES, type JourneyStatus } from "@/lib/mock/live-tracking";
+import { MAP_PINS, STATUS_KEY, ZONES, type JourneyStatus } from "@/lib/mock/live-tracking";
 
 const LEGEND: JourneyStatus[] = ["On-time", "Delayed", "Broken down", "Off-route"];
 
 /** Placeholder fleet map (real Google Maps lands later). Shows status legend + bus pins. */
 export function LiveMap() {
+  const t = useTranslations("liveTracking");
   return (
     <div
       className="relative h-[560px] w-full overflow-hidden rounded-card border border-border"
@@ -29,7 +31,7 @@ export function LiveMap() {
             className="flex items-center gap-1.5 rounded-pill bg-surface px-2.5 py-1 text-xs font-medium text-slate-600 shadow-sm"
           >
             <span className="h-2 w-2 rounded-full" style={{ background: TONE_VAR[toneFor(s)] }} />
-            {s}
+            {t(`status.${STATUS_KEY[s]}`)}
           </span>
         ))}
       </div>

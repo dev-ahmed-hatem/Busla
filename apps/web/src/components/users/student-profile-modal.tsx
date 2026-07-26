@@ -16,6 +16,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
@@ -38,6 +39,7 @@ function InfoRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string
 }
 
 function GuardianCard({ g }: { g: Guardian }) {
+  const t = useTranslations("users.profile");
   return (
     <div className="rounded-lg border border-border bg-slate-50 p-4">
       <div className="flex items-center gap-3">
@@ -46,8 +48,8 @@ function GuardianCard({ g }: { g: Guardian }) {
           <div className="truncate text-sm font-semibold text-brand-navy">{g.name}</div>
           <div className="text-xs text-slate-500">
             {g.role}
-            {g.primary && " (Primary Contact)"}
-            {g.isNew && " (New)"}
+            {g.primary && ` (${t("primaryContact")})`}
+            {g.isNew && ` (${t("new")})`}
           </div>
         </div>
       </div>
@@ -83,21 +85,20 @@ function PickupCard({ title, time, address }: { title: string; time: string; add
 }
 
 function RequestsTab() {
+  const t = useTranslations("users.profile");
   const r = p.request;
   if (!r) {
     return (
       <div className="grid place-items-center py-12 text-center">
-        <div className="text-sm font-semibold text-brand-navy">No Available Requests</div>
-        <div className="mt-1 text-xs text-slate-400">
-          New requests will appear here once submitted
-        </div>
+        <div className="text-sm font-semibold text-brand-navy">{t("emptyTitle")}</div>
+        <div className="mt-1 text-xs text-slate-400">{t("emptySubtitle")}</div>
       </div>
     );
   }
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-brand-navy">Change Details</span>
+        <span className="text-sm font-semibold text-brand-navy">{t("changeDetails")}</span>
         <span className="text-xs text-slate-500">{r.date}</span>
       </div>
 
@@ -126,17 +127,19 @@ function RequestsTab() {
       <div className="rounded-lg bg-[#fdf9ee] p-4">
         <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
           <Lightbulb className="h-4 w-4 text-status-delayed" />
-          System Suggestion
+          {t("systemSuggestion")}
         </div>
         <p className="mt-1 text-xs text-slate-600">{r.suggestion.text}</p>
         <div className="mt-3 text-sm">
-          <span className="mb-1 block text-xs font-medium text-slate-500">Assign New Bus *</span>
+          <span className="mb-1 block text-xs font-medium text-slate-500">
+            {t("assignNewBus")} *
+          </span>
           <div className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-slate-700">
             {r.suggestion.bus}
           </div>
         </div>
         <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-          <span>{r.suggestion.seatsLeft} Seats Left</span>
+          <span>{t("seatsLeft", { n: r.suggestion.seatsLeft })}</span>
           <div className="w-24">
             <ProgressBar percent={r.suggestion.percent} tone="delayed" />
           </div>
@@ -147,11 +150,11 @@ function RequestsTab() {
       <div className="flex justify-end gap-3">
         <Button variant="dangerOutline">
           <X className="h-4 w-4" />
-          Reject Request
+          {t("reject")}
         </Button>
         <Button variant="success">
           <Check className="h-4 w-4" />
-          Approve Request
+          {t("approve")}
         </Button>
       </div>
     </div>
@@ -159,6 +162,7 @@ function RequestsTab() {
 }
 
 export function StudentProfileModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const t = useTranslations("users.profile");
   const [tab, setTab] = useState("personal");
   const tr = p.transportation;
 
@@ -179,17 +183,19 @@ export function StudentProfileModal({ open, onClose }: { open: boolean; onClose:
             <Avatar name={p.name} size={96} />
             <div>
               <div className="font-semibold text-brand-navy">{p.name}</div>
-              <div className="text-xs text-slate-500">Student ID: {p.studentId}</div>
+              <div className="text-xs text-slate-500">
+                {t("studentId")}: {p.studentId}
+              </div>
             </div>
             <StatusPill status={p.status} tone="onTime" />
             <div className="mt-2 flex w-full flex-col gap-2">
               <Button variant="primary">
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("edit")}
               </Button>
               <Button variant="outline">
                 <Printer className="h-4 w-4" />
-                Print Report
+                {t("printReport")}
               </Button>
             </div>
           </div>
@@ -198,10 +204,10 @@ export function StudentProfileModal({ open, onClose }: { open: boolean; onClose:
         <div className="min-w-0 flex-1">
           <Tabs
             items={[
-              { key: "personal", label: "Personal Info" },
-              { key: "guardian", label: "Guardian" },
-              { key: "transportation", label: "Transportation" },
-              { key: "requests", label: "Requests", count: p.request ? 1 : undefined },
+              { key: "personal", label: t("tabs.personal") },
+              { key: "guardian", label: t("tabs.guardian") },
+              { key: "transportation", label: t("tabs.transportation") },
+              { key: "requests", label: t("tabs.requests"), count: p.request ? 1 : undefined },
             ]}
             value={tab}
             onValueChange={setTab}
@@ -210,10 +216,10 @@ export function StudentProfileModal({ open, onClose }: { open: boolean; onClose:
 
           {tab === "personal" && (
             <div>
-              <InfoRow icon={Calendar} label="Date of Birth" value={p.personal.dob} />
-              <InfoRow icon={GraduationCap} label="Grade" value={p.personal.grade} />
-              <InfoRow icon={School} label="Class" value={p.personal.class} />
-              <InfoRow icon={MapPin} label="Address" value={p.personal.address} />
+              <InfoRow icon={Calendar} label={t("personal.dob")} value={p.personal.dob} />
+              <InfoRow icon={GraduationCap} label={t("personal.grade")} value={p.personal.grade} />
+              <InfoRow icon={School} label={t("personal.class")} value={p.personal.class} />
+              <InfoRow icon={MapPin} label={t("personal.address")} value={p.personal.address} />
             </div>
           )}
 
@@ -229,16 +235,20 @@ export function StudentProfileModal({ open, onClose }: { open: boolean; onClose:
             <div className="flex flex-col gap-4">
               <div>
                 <div className="text-lg font-bold text-status-info">{tr.bus}</div>
-                <div className="mt-1 text-sm text-slate-600">Driver: {tr.driver}</div>
-                <div className="text-sm text-slate-600">Supervisor: {tr.supervisor}</div>
+                <div className="mt-1 text-sm text-slate-600">
+                  {t("driver")}: {tr.driver}
+                </div>
+                <div className="text-sm text-slate-600">
+                  {t("supervisor")}: {tr.supervisor}
+                </div>
               </div>
               <PickupCard
-                title="Morning Pickup"
+                title={t("morningPickup")}
                 time={tr.morningPickup.time}
                 address={tr.morningPickup.address}
               />
               <PickupCard
-                title="Afternoon Drop-Off"
+                title={t("afternoonDropoff")}
                 time={tr.afternoonDropoff.time}
                 address={tr.afternoonDropoff.address}
               />

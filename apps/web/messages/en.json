@@ -105,7 +105,66 @@
     "export": "Export",
     "deleteAll": "Delete All",
     "selected": "{count} selected",
-    "clearSelection": "Clear selection"
+    "clearSelection": "Clear selection",
+    "cancel": "Cancel",
+    "addModal": {
+      "title": {
+        "students": "Add New Student",
+        "drivers": "Add New Driver",
+        "supervisors": "Add New Supervisor"
+      },
+      "subtitle": {
+        "students": "Enter the student's details, guardian contact, and address to register them in the system.",
+        "drivers": "Enter the driver's personal details, license information, and experience to register them in the fleet.",
+        "supervisors": "Enter the supervisor's personal details and home address. The system will use the address as the initial route stop."
+      },
+      "uploadPhoto": "Upload photo",
+      "photoHint": "PNG, JPG, up to 5MB",
+      "tabs": { "personal": "Personal Info", "contact": "Contact", "address": "Address" },
+      "sections": { "personal": "Personal Info", "work": "Work Info", "home": "Home Address" },
+      "fields": {
+        "fullName": "Full Name",
+        "dob": "Date of Birth",
+        "grade": "Grade",
+        "class": "Class",
+        "guardianName": "Primary Guardian Name",
+        "phone": "Phone Number",
+        "relationship": "Relationship",
+        "email": "Email (Optional)",
+        "area": "Area",
+        "fullAddress": "Full Address",
+        "nationalId": "National ID",
+        "license": "Driver's License Number",
+        "licenseExpiry": "License Expiry Date",
+        "experience": "Years of Experience"
+      }
+    },
+    "profile": {
+      "studentId": "Student ID",
+      "edit": "Edit",
+      "printReport": "Print Report",
+      "tabs": {
+        "personal": "Personal Info",
+        "guardian": "Guardian",
+        "transportation": "Transportation",
+        "requests": "Requests"
+      },
+      "personal": { "dob": "Date of Birth", "grade": "Grade", "class": "Class", "address": "Address" },
+      "primaryContact": "Primary Contact",
+      "new": "New",
+      "driver": "Driver",
+      "supervisor": "Supervisor",
+      "morningPickup": "Morning Pickup",
+      "afternoonDropoff": "Afternoon Drop-Off",
+      "changeDetails": "Change Details",
+      "assignNewBus": "Assign New Bus",
+      "seatsLeft": "{n} Seats Left",
+      "systemSuggestion": "System Suggestion",
+      "reject": "Reject Request",
+      "approve": "Approve Request",
+      "emptyTitle": "No Available Requests",
+      "emptySubtitle": "New requests will appear here once submitted"
+    }
   },
   "buses": {
     "title": "Buses Management",
@@ -126,7 +185,77 @@
       "actions": "Actions"
     },
     "resolve": "Resolve",
-    "sendToMaintenance": "Maintenance"
+    "sendToMaintenance": "Maintenance",
+    "cancel": "Cancel",
+    "addModal": {
+      "title": "Add New Bus",
+      "subtitle": "Enter the vehicle's identification, specifications, and capacity to include it in the active fleet.",
+      "fields": {
+        "busId": "Bus Number / ID",
+        "model": "Bus Model",
+        "plate": "License Plate Number",
+        "capacity": "Total Capacity (Seats)",
+        "odometer": "Odometer (Current KM)"
+      }
+    },
+    "profile": {
+      "resolve": "Resolve",
+      "deleteBus": "Delete Bus",
+      "tabs": { "info": "Info", "route": "Route", "maintenance": "Maintenance" },
+      "info": { "driver": "Driver", "model": "Bus Model", "plate": "Bus Plate", "capacity": "Capacity" },
+      "route": { "route": "Route", "odometer": "Odometer (Current KM)" },
+      "maintenance": {
+        "breakdown": "Breakdown",
+        "last": "Last maintenance",
+        "oil": "Oil Health",
+        "tire": "Tire Life"
+      }
+    }
+  },
+  "liveTracking": {
+    "map": "Map",
+    "journeyLogs": "Journey Logs",
+    "status": {
+      "onTime": "On-time",
+      "delayed": "Delayed",
+      "brokenDown": "Broken down",
+      "offRoute": "Off-route"
+    },
+    "liveJourneys": "Live Journeys",
+    "searchJourneys": "Search by Bus no. or Driver name…",
+    "headingTo": "Heading to",
+    "stoppedAt": "Stopped at",
+    "mins": "mins",
+    "km": "KM",
+    "back": "Back",
+    "from": "From",
+    "to": "To",
+    "departureTime": "Departure Time",
+    "stops": "Stops",
+    "estimatedArrival": "Estimated Arrival",
+    "routeTimeline": "Route Timeline",
+    "stopStatus": { "completed": "Completed", "current": "On-time", "upcoming": "Upcoming" },
+    "kpi": {
+      "completed": "Completed Trips",
+      "ontime": "On time Trips",
+      "delayed": "Delayed Trips",
+      "incidents": "Incidents"
+    },
+    "cols": {
+      "id": "Journey id",
+      "bus": "Bus",
+      "driver": "Driver",
+      "nanny": "Nanny",
+      "shift": "Shift",
+      "departed": "Departed",
+      "arrived": "Arrived",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "exportReport": "Export Report",
+    "shift": "Shift",
+    "area": "Area",
+    "statusFilter": "Status"
   },
   "common": { "loading": "Loading…", "search": "Search" }
 }

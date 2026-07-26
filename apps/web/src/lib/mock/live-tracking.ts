@@ -5,6 +5,14 @@
 
 export type JourneyStatus = "On-time" | "Delayed" | "Broken down" | "Off-route";
 
+/** Maps a journey status to its `liveTracking.status.*` i18n key. */
+export const STATUS_KEY: Record<JourneyStatus, string> = {
+  "On-time": "onTime",
+  Delayed: "delayed",
+  "Broken down": "brokenDown",
+  "Off-route": "offRoute",
+};
+
 export interface Journey {
   id: string;
   bus: string;

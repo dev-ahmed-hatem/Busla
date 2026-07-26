@@ -2,6 +2,7 @@
 
 import { StatusPill, TONE_VAR } from "@busla/ui";
 import { Calendar, ChevronDown, Download, Eye, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -17,11 +18,12 @@ import {
 } from "@/lib/mock/live-tracking";
 
 function Kpi({ kpi }: { kpi: JourneyLogKpi }) {
+  const t = useTranslations("liveTracking");
   return (
     <Card>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="truncate text-sm text-slate-500">{kpi.title}</div>
+          <div className="truncate text-sm text-slate-500">{t(`kpi.${kpi.key}`)}</div>
           <div className="text-2xl font-bold text-brand-navy">{kpi.value}</div>
           <div className="truncate text-xs text-slate-400">{kpi.sub}</div>
         </div>
@@ -55,26 +57,25 @@ function TimeCell({ sched, actual, alert }: { sched: string; actual: string; ale
 }
 
 export function JourneyLogs() {
+  const t = useTranslations("liveTracking");
   const [page, setPage] = useState(1);
 
   const columns: Column<JourneyLog>[] = [
-    { key: "id", header: "Journey id", render: (r) => <span className="font-medium text-brand-navy">{r.id}</span> },
-    { key: "bus", header: "Bus", render: (r) => <span className="text-slate-600">{r.bus}</span> },
-    { key: "driver", header: "Driver", render: (r) => <span className="text-slate-600">{r.driver}</span> },
-    { key: "nanny", header: "Nanny", render: (r) => <span className="text-slate-600">{r.nanny}</span> },
-    { key: "shift", header: "Shift", render: (r) => <span className="text-slate-600">{r.shift}</span> },
-    { key: "departed", header: "Departed", render: (r) => <TimeCell sched={r.depSched} actual={r.depActual} /> },
+    { key: "id", header: t("cols.id"), render: (r) => <span className="font-medium text-brand-navy">{r.id}</span> },
+    { key: "bus", header: t("cols.bus"), render: (r) => <span className="text-slate-600">{r.bus}</span> },
+    { key: "driver", header: t("cols.driver"), render: (r) => <span className="text-slate-600">{r.driver}</span> },
+    { key: "nanny", header: t("cols.nanny"), render: (r) => <span className="text-slate-600">{r.nanny}</span> },
+    { key: "shift", header: t("cols.shift"), render: (r) => <span className="text-slate-600">{r.shift}</span> },
+    { key: "departed", header: t("cols.departed"), render: (r) => <TimeCell sched={r.depSched} actual={r.depActual} /> },
     {
       key: "arrived",
-      header: "Arrived",
-      render: (r) => (
-        <TimeCell sched={r.arrSched} actual={r.arrActual} alert={r.status === "Broken down"} />
-      ),
+      header: t("cols.arrived"),
+      render: (r) => <TimeCell sched={r.arrSched} actual={r.arrActual} alert={r.status === "Broken down"} />,
     },
-    { key: "status", header: "Status", render: (r) => <StatusPill status={r.status} label={r.statusLabel} /> },
+    { key: "status", header: t("cols.status"), render: (r) => <StatusPill status={r.status} label={r.statusLabel} /> },
     {
       key: "actions",
-      header: "Actions",
+      header: t("cols.actions"),
       render: () => (
         <button
           type="button"
@@ -108,22 +109,22 @@ export function JourneyLogs() {
 
       <Card>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-brand-navy">Journey Logs</h2>
+          <h2 className="text-base font-semibold text-brand-navy">{t("journeyLogs")}</h2>
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
               <Search className="pointer-events-none absolute inset-y-0 start-3 my-auto h-4 w-4 text-slate-400" />
               <input
                 type="search"
-                placeholder="Search by Bus no. or Driver name…"
+                placeholder={t("searchJourneys")}
                 className="h-9 w-56 rounded-md border border-border bg-surface ps-9 pe-3 text-sm outline-none focus:border-brand-navy"
               />
             </div>
-            <FilterButton label="Shift" />
-            <FilterButton label="Area" />
-            <FilterButton label="Status" />
+            <FilterButton label={t("shift")} />
+            <FilterButton label={t("area")} />
+            <FilterButton label={t("statusFilter")} />
             <Button variant="primary">
               <Download className="h-4 w-4" />
-              Export Report
+              {t("exportReport")}
             </Button>
           </div>
         </div>

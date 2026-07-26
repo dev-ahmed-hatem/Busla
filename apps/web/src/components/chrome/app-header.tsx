@@ -92,8 +92,8 @@ export function AppHeader() {
 
       <LocaleSwitch />
 
-      <button
-        type="button"
+      <Link
+        href="/notifications"
         aria-label="Notifications"
         className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-slate-100"
       >
@@ -101,7 +101,7 @@ export function AppHeader() {
         <span className="absolute -end-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-status-issue px-1 text-[10px] font-semibold text-white">
           {NOTIFICATION_COUNT}
         </span>
-      </button>
+      </Link>
 
       <button
         type="button"

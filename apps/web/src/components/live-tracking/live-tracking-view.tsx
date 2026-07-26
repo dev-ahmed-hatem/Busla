@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Card } from "@/components/ui/card";
@@ -10,14 +11,15 @@ import { LiveJourneysPanel } from "./live-journeys-panel";
 import { LiveMap } from "./live-map";
 
 export function LiveTrackingView() {
+  const t = useTranslations("liveTracking");
   const [mode, setMode] = useState("map");
 
   return (
     <div>
       <PillTabs
         items={[
-          { key: "map", label: "Map" },
-          { key: "logs", label: "Journey Logs" },
+          { key: "map", label: t("map") },
+          { key: "logs", label: t("journeyLogs") },
         ]}
         value={mode}
         onValueChange={setMode}

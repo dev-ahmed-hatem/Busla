@@ -105,7 +105,66 @@
     "export": "تصدير",
     "deleteAll": "حذف الكل",
     "selected": "{count} محدد",
-    "clearSelection": "إلغاء التحديد"
+    "clearSelection": "إلغاء التحديد",
+    "cancel": "إلغاء",
+    "addModal": {
+      "title": {
+        "students": "إضافة طالب جديد",
+        "drivers": "إضافة سائق جديد",
+        "supervisors": "إضافة مشرفة جديدة"
+      },
+      "subtitle": {
+        "students": "أدخل بيانات الطالب ومعلومات ولي الأمر والعنوان لتسجيله في النظام.",
+        "drivers": "أدخل بيانات السائق الشخصية ومعلومات الرخصة والخبرة لتسجيله في الأسطول.",
+        "supervisors": "أدخل بيانات المشرفة الشخصية وعنوان المنزل. سيستخدم النظام العنوان كأول محطة في المسار."
+      },
+      "uploadPhoto": "رفع صورة",
+      "photoHint": "PNG أو JPG حتى 5 ميجابايت",
+      "tabs": { "personal": "البيانات الشخصية", "contact": "بيانات الاتصال", "address": "العنوان" },
+      "sections": { "personal": "البيانات الشخصية", "work": "بيانات العمل", "home": "عنوان المنزل" },
+      "fields": {
+        "fullName": "الاسم الكامل",
+        "dob": "تاريخ الميلاد",
+        "grade": "الصف",
+        "class": "الفصل",
+        "guardianName": "اسم ولي الأمر الأساسي",
+        "phone": "رقم الهاتف",
+        "relationship": "صلة القرابة",
+        "email": "البريد الإلكتروني (اختياري)",
+        "area": "المنطقة",
+        "fullAddress": "العنوان الكامل",
+        "nationalId": "الرقم القومي",
+        "license": "رقم رخصة القيادة",
+        "licenseExpiry": "تاريخ انتهاء الرخصة",
+        "experience": "سنوات الخبرة"
+      }
+    },
+    "profile": {
+      "studentId": "رقم الطالب",
+      "edit": "تعديل",
+      "printReport": "طباعة التقرير",
+      "tabs": {
+        "personal": "البيانات الشخصية",
+        "guardian": "ولي الأمر",
+        "transportation": "النقل",
+        "requests": "الطلبات"
+      },
+      "personal": { "dob": "تاريخ الميلاد", "grade": "الصف", "class": "الفصل", "address": "العنوان" },
+      "primaryContact": "جهة الاتصال الأساسية",
+      "new": "جديد",
+      "driver": "السائق",
+      "supervisor": "المشرفة",
+      "morningPickup": "الاصطحاب الصباحي",
+      "afternoonDropoff": "التوصيل المسائي",
+      "changeDetails": "تفاصيل التغيير",
+      "assignNewBus": "تعيين حافلة جديدة",
+      "seatsLeft": "{n} مقاعد متبقية",
+      "systemSuggestion": "اقتراح النظام",
+      "reject": "رفض الطلب",
+      "approve": "الموافقة على الطلب",
+      "emptyTitle": "لا توجد طلبات",
+      "emptySubtitle": "ستظهر الطلبات الجديدة هنا بمجرد إرسالها"
+    }
   },
   "buses": {
     "title": "إدارة الحافلات",
@@ -126,7 +185,77 @@
       "actions": "إجراءات"
     },
     "resolve": "حل",
-    "sendToMaintenance": "صيانة"
+    "sendToMaintenance": "صيانة",
+    "cancel": "إلغاء",
+    "addModal": {
+      "title": "إضافة حافلة جديدة",
+      "subtitle": "أدخل بيانات تعريف المركبة ومواصفاتها وسعتها لإضافتها إلى الأسطول النشط.",
+      "fields": {
+        "busId": "رقم / معرّف الحافلة",
+        "model": "طراز الحافلة",
+        "plate": "رقم لوحة الترخيص",
+        "capacity": "السعة الإجمالية (المقاعد)",
+        "odometer": "عداد المسافة (الكيلومترات الحالية)"
+      }
+    },
+    "profile": {
+      "resolve": "حل",
+      "deleteBus": "حذف الحافلة",
+      "tabs": { "info": "معلومات", "route": "المسار", "maintenance": "الصيانة" },
+      "info": { "driver": "السائق", "model": "طراز الحافلة", "plate": "لوحة الحافلة", "capacity": "السعة" },
+      "route": { "route": "المسار", "odometer": "عداد المسافة (الكيلومترات الحالية)" },
+      "maintenance": {
+        "breakdown": "العطل",
+        "last": "آخر صيانة",
+        "oil": "حالة الزيت",
+        "tire": "عمر الإطارات"
+      }
+    }
+  },
+  "liveTracking": {
+    "map": "الخريطة",
+    "journeyLogs": "سجلات الرحلات",
+    "status": {
+      "onTime": "في الموعد",
+      "delayed": "متأخرة",
+      "brokenDown": "معطلة",
+      "offRoute": "خارج المسار"
+    },
+    "liveJourneys": "الرحلات المباشرة",
+    "searchJourneys": "ابحث برقم الحافلة أو اسم السائق…",
+    "headingTo": "متجهة إلى",
+    "stoppedAt": "متوقفة عند",
+    "mins": "دقيقة",
+    "km": "كم",
+    "back": "رجوع",
+    "from": "من",
+    "to": "إلى",
+    "departureTime": "وقت المغادرة",
+    "stops": "المحطات",
+    "estimatedArrival": "الوصول المتوقع",
+    "routeTimeline": "الجدول الزمني للمسار",
+    "stopStatus": { "completed": "مكتملة", "current": "في الموعد", "upcoming": "قادمة" },
+    "kpi": {
+      "completed": "الرحلات المكتملة",
+      "ontime": "الرحلات في الموعد",
+      "delayed": "الرحلات المتأخرة",
+      "incidents": "الحوادث"
+    },
+    "cols": {
+      "id": "رقم الرحلة",
+      "bus": "الحافلة",
+      "driver": "السائق",
+      "nanny": "المشرفة",
+      "shift": "الوردية",
+      "departed": "المغادرة",
+      "arrived": "الوصول",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "exportReport": "تصدير التقرير",
+    "shift": "الوردية",
+    "area": "المنطقة",
+    "statusFilter": "الحالة"
   },
   "common": { "loading": "جارٍ التحميل…", "search": "بحث" }
 }

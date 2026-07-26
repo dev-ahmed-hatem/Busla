@@ -1,0 +1,10 @@
+{
+  "@@locale": "en",
+  "appName": "BUSLA",
+  "signIn": "Sign in",
+  "email": "Email",
+  "password": "Password",
+  "systemStatus": "System status",
+  "allSystemsOperational": "All systems operational",
+  "loading": "Loading…"
+}

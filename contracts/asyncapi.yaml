@@ -1,0 +1,69 @@
+asyncapi: 3.0.0
+info:
+  title: BUSLA Realtime
+  version: 0.1.0
+  description: |
+    WebSocket channels served by Django Channels. Payloads here are hand-mirrored
+    into packages/realtime-ts and flutter_packages/busla_core/realtime.
+    Channels/consumers are added per-slice; Phase 0 defines the contract shape only.
+servers:
+  local:
+    host: localhost:8000
+    protocol: ws
+channels:
+  tracking:
+    address: /ws/tracking
+    description: School-wide live map. Group `school.<id>.tracking`.
+    messages:
+      busPosition:
+        $ref: "#/components/messages/BusPosition"
+      busStatusChanged:
+        $ref: "#/components/messages/BusStatusChanged"
+  bus:
+    address: /ws/bus/{busId}
+    description: Single bus — position, trip progress, stop reached.
+    parameters:
+      busId:
+        description: Bus UUID
+  driverIngest:
+    address: /ws/driver
+    description: Driver app → server GPS + trip event ingest (inbound).
+    messages:
+      positionReport:
+        $ref: "#/components/messages/PositionReport"
+  notifications:
+    address: /ws/notifications
+    description: Admin notification stream. Group `school.<id>.notifications`.
+  parent:
+    address: /ws/parent
+    description: Parent app — child's bus position, trip progress, boarding, request status.
+components:
+  messages:
+    BusPosition:
+      name: bus.position
+      payload:
+        $ref: "#/components/schemas/Position"
+    BusStatusChanged:
+      name: bus.status_changed
+      payload:
+        type: object
+        properties:
+          busId: { type: string, format: uuid }
+          status:
+            type: string
+            enum: [on_time, delayed, broken_down, off_route]
+    PositionReport:
+      name: position.report
+      payload:
+        $ref: "#/components/schemas/Position"
+  schemas:
+    Position:
+      type: object
+      required: [busId, lat, lon, ts]
+      properties:
+        busId: { type: string, format: uuid }
+        lat: { type: number }
+        lon: { type: number }
+        speed: { type: number }
+        heading: { type: number }
+        ts: { type: string, format: date-time }

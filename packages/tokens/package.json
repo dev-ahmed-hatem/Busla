@@ -1,0 +1,19 @@
+{
+  "name": "@busla/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BUSLA design tokens — single source → CSS vars (web) + tokens.dart (Flutter)",
+  "files": ["dist"],
+  "exports": {
+    "./tokens.css": "./dist/tokens.css",
+    "./tokens.json": "./dist/tokens.json"
+  },
+  "scripts": {
+    "build": "style-dictionary build --config style-dictionary.config.mjs",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "style-dictionary": "^4.3.0",
+    "rimraf": "^6.0.1"
+  }
+}

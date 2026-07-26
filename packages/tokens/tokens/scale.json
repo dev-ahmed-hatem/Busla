@@ -1,0 +1,26 @@
+{
+  "radius": {
+    "sm":   { "value": "6px" },
+    "md":   { "value": "10px" },
+    "lg":   { "value": "16px" },
+    "pill": { "value": "9999px" }
+  },
+  "space": {
+    "1": { "value": "4px" },
+    "2": { "value": "8px" },
+    "3": { "value": "12px" },
+    "4": { "value": "16px" },
+    "6": { "value": "24px" },
+    "8": { "value": "32px" }
+  },
+  "font": {
+    "family": { "value": "Inter, system-ui, 'Segoe UI', sans-serif" },
+    "size": {
+      "xs": { "value": "12px" },
+      "sm": { "value": "14px" },
+      "md": { "value": "16px" },
+      "lg": { "value": "20px" },
+      "xl": { "value": "28px" }
+    }
+  }
+}

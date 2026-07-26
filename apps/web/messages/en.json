@@ -1,0 +1,25 @@
+{
+  "app": { "name": "BUSLA", "tagline": "Fleet operations & live tracking" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "liveTracking": "Live tracking",
+    "routePlanning": "Route Planning",
+    "users": "Users Management",
+    "buses": "Buses Management",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "signOut": "Sign Out"
+  },
+  "auth": {
+    "login": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "healthTitle": "System status",
+    "healthOk": "All systems operational"
+  },
+  "common": { "loading": "Loading…", "search": "Search" }
+}

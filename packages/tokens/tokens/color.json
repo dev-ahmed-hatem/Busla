@@ -1,0 +1,32 @@
+{
+  "color": {
+    "brand": {
+      "navy":   { "value": "#12284B", "comment": "BUSLA primary navy (logo, headings, primary buttons)" },
+      "amber":  { "value": "#F5A623", "comment": "BUSLA accent amber (the 'A' in the wordmark)" },
+      "busYellow": { "value": "#FBBF24", "comment": "School-bus yellow — map pins & bus iconography" }
+    },
+    "status": {
+      "onTime":  { "value": "#22C55E", "comment": "green — on-time / active / ready" },
+      "delayed": { "value": "#F59E0B", "comment": "amber — delayed / maintenance / soon" },
+      "issue":   { "value": "#EF4444", "comment": "red — broken-down / absent / issue / critical" },
+      "info":    { "value": "#3B82F6", "comment": "blue — informational" }
+    },
+    "neutral": {
+      "0":   { "value": "#FFFFFF" },
+      "50":  { "value": "#F8FAFC" },
+      "100": { "value": "#F1F5F9" },
+      "200": { "value": "#E2E8F0" },
+      "300": { "value": "#CBD5E1" },
+      "500": { "value": "#64748B" },
+      "700": { "value": "#334155" },
+      "900": { "value": "#0F172A" }
+    },
+    "surface":    { "value": "{color.neutral.0.value}" },
+    "background": { "value": "{color.neutral.50.value}" },
+    "border":     { "value": "{color.neutral.200.value}" },
+    "text": {
+      "primary":   { "value": "{color.neutral.900.value}" },
+      "secondary": { "value": "{color.neutral.500.value}" }
+    }
+  }
+}

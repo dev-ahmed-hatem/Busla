@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      web: ${{ steps.filter.outputs.web }}
+      flutter: ${{ steps.filter.outputs.flutter }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'apps/api/**'
+              - 'contracts/**'
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+              - 'contracts/**'
+            flutter:
+              - 'apps/parent_app/**'
+              - 'apps/driver_app/**'
+              - 'flutter_packages/**'
+              - 'contracts/**'
+
+  backend:
+    needs: changes
+    if: ${{ needs.changes.outputs.api == 'true' }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: busla
+          POSTGRES_USER: busla
+          POSTGRES_PASSWORD: busla
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U busla" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgis://busla:busla@localhost:5432/busla
+      DJANGO_SETTINGS_MODULE: config.settings.test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: sudo apt-get update && sudo apt-get install -y gdal-bin libgdal-dev binutils libproj-dev
+      - run: pip install poetry && cd apps/api && poetry install
+      - name: Ruff + mypy
+        run: cd apps/api && poetry run ruff check . && poetry run mypy .
+      - name: Migrations up to date
+        run: cd apps/api && poetry run python manage.py makemigrations --check --dry-run
+      - name: Pytest
+        run: cd apps/api && poetry run pytest
+      - name: OpenAPI schema generates
+        run: cd apps/api && poetry run python manage.py spectacular --file /tmp/openapi.yaml
+
+  web:
+    needs: changes
+    if: ${{ needs.changes.outputs.web == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 11 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @busla/tokens build
+      - run: pnpm turbo run lint typecheck test build
+
+  flutter:
+    needs: changes
+    if: ${{ needs.changes.outputs.flutter == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable }
+      - run: dart pub global activate melos
+      - run: melos bootstrap
+      - run: melos run analyze
+      - run: melos run test
+
+  contract-drift:
+    needs: changes
+    if: ${{ needs.changes.outputs.api == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Runs 'make diff-check' once the api service is available in CI compose."

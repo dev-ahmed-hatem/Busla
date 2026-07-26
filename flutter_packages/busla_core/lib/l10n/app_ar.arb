@@ -1,0 +1,10 @@
+{
+  "@@locale": "ar",
+  "appName": "BUSLA",
+  "signIn": "تسجيل الدخول",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "systemStatus": "حالة النظام",
+  "allSystemsOperational": "جميع الأنظمة تعمل",
+  "loading": "جارٍ التحميل…"
+}

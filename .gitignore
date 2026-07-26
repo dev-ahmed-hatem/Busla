@@ -1,0 +1,65 @@
+# --- Node / TS ---
+node_modules/
+.pnpm-store/
+.turbo/
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+coverage/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.sqlite3
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+staticfiles/
+mediafiles/
+
+# --- Dart / Flutter ---
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+**/build/
+*.iml
+.pub-cache/
+pubspec.lock
+
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+service-account*.json
+
+# --- Claude Code session artifacts ---
+.claude/
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# --- Generated (kept in-repo, but ignore transient) ---
+contracts/.cache/
+
+# Keep committed generated artifacts (drift-gated / needed for resolution):
+#   - design-token build output (imported by web + flutter)
+#   - generated API clients (TS + Dart) — CI fails if they drift
+!packages/tokens/dist/
+!packages/tokens/dist/**
+!packages/api-client-ts/src/generated/
+!packages/api-client-ts/src/generated/**
+!flutter_packages/busla_core/lib/api/generated/
+!flutter_packages/busla_core/lib/api/generated/**

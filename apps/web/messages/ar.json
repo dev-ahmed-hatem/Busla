@@ -1,0 +1,25 @@
+{
+  "app": { "name": "BUSLA", "tagline": "إدارة الأسطول والتتبع المباشر" },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "liveTracking": "التتبع المباشر",
+    "routePlanning": "تخطيط المسارات",
+    "users": "إدارة المستخدمين",
+    "buses": "إدارة الحافلات",
+    "notifications": "الإشعارات",
+    "settings": "الإعدادات",
+    "signOut": "تسجيل الخروج"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "forgotPassword": "هل نسيت كلمة المرور؟"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "healthTitle": "حالة النظام",
+    "healthOk": "جميع الأنظمة تعمل"
+  },
+  "common": { "loading": "جارٍ التحميل…", "search": "بحث" }
+}

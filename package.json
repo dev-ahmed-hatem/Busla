@@ -1,0 +1,23 @@
+{
+  "name": "busla",
+  "private": true,
+  "version": "0.1.0",
+  "description": "BUSLA — school-bus fleet operations & real-time tracking platform (monorepo root)",
+  "packageManager": "pnpm@11.17.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "tokens": "turbo run build --filter=@busla/tokens"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "prettier": "^3.4.2"
+  }
+}

@@ -1,0 +1,43 @@
+openapi: 3.0.3
+info:
+  title: BUSLA API
+  version: 0.1.0
+  description: |
+    School-bus fleet operations & real-time tracking platform.
+
+    THIS FILE IS THE SOURCE OF TRUTH for the TypeScript and Dart API clients.
+    It is regenerated from the Django backend via `make openapi`
+    (drf-spectacular). Do not edit by hand except for this Phase-0 bootstrap
+    entry — CI fails if it drifts from the backend (`make diff-check`).
+servers:
+  - url: http://localhost:8000
+    description: Local
+paths:
+  /api/v1/health/:
+    get:
+      operationId: health_retrieve
+      description: Unauthenticated liveness probe.
+      tags: [health]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status, service, version, time]
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        service:
+          type: string
+        version:
+          type: string
+        time:
+          type: string
+          format: date-time

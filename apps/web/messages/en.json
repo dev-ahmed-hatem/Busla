@@ -73,6 +73,12 @@
     "viewRequest": "View Request",
     "findSubstitute": "Find substitute",
     "sendReminder": "Send reminder",
+    "reminderSent": "Reminder sent",
+    "markAllRead": "Mark all read",
+    "substitutesTitle": "Available substitutes",
+    "noSubstitutes": "No available drivers right now",
+    "loading": "Loading…",
+    "empty": "Nothing here yet",
     "driversCheckedIn": "{checked} / {total} drivers checked in"
   },
   "users": {

@@ -1,13 +1,15 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
-import type { NotifGroup } from "@/lib/mock/notifications";
+import type { NotifGroup } from "@/lib/api/resources";
 
 /** Shared row card styling for notification lists. */
 export const ROW_CLASS =
   "flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3";
 
-export function UnreadDot() {
+/** Renders the unread marker, or an equal-width spacer so read rows stay aligned. */
+export function UnreadDot({ read = false }: { read?: boolean }) {
+  if (read) return <span className="h-2 w-2 shrink-0" aria-hidden />;
   return <span className="h-2 w-2 shrink-0 rounded-full bg-status-info" aria-label="Unread" />;
 }
 

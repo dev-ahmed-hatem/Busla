@@ -16,11 +16,17 @@ import {
   type JourneyLogKpi,
   type OptimizeParams,
   type Paginated,
+  type ParentRequestDetail,
+  type ParentRequestItem,
   type QueryParams,
   type Route,
   type RouteReadiness,
+  type ShiftBoard,
+  type Substitute,
   type TripDetail,
+  type TripNotif,
   type TripOverview,
+  type UnreadCount,
 } from "./resources";
 
 /** Active journeys, polled every 7s for a live feel (no WebSockets). */
@@ -97,6 +103,95 @@ export function useDashboardStats() {
     queryKey: ["dashboard-stats"],
     queryFn: () => apiGet<DashboardStats>("/api/v1/dashboard/stats/"),
     enabled: !!token,
+  });
+}
+
+// --- Notifications (Phase 5), polled every 7s for a live feel ---
+
+/** Persistent notification feed (Trips tab). */
+export function useNotifications() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<TripNotif[]>({
+    queryKey: ["notifications"],
+    queryFn: () => apiGet<TripNotif[]>("/api/v1/notifications/"),
+    enabled: !!token,
+    refetchInterval: 7000,
+  });
+}
+
+/** Unread count for the header bell badge. */
+export function useUnreadCount() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<UnreadCount>({
+    queryKey: ["notifications", "unread-count"],
+    queryFn: () => apiGet<UnreadCount>("/api/v1/notifications/unread-count/"),
+    enabled: !!token,
+    refetchInterval: 7000,
+  });
+}
+
+export function useMarkAllRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiCreate("/api/v1/notifications/read-all/", {}),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+}
+
+/** Today's driver shift-readiness board. */
+export function useShiftReadiness() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<ShiftBoard>({
+    queryKey: ["shift-readiness"],
+    queryFn: () => apiGet<ShiftBoard>("/api/v1/shift-readiness/"),
+    enabled: !!token,
+    refetchInterval: 7000,
+  });
+}
+
+/** Available active drivers for substitution (fetched on demand). */
+export function useSubstitutes(enabled: boolean) {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<Substitute[]>({
+    queryKey: ["shift-readiness", "substitutes"],
+    queryFn: () => apiGet<Substitute[]>("/api/v1/shift-readiness/substitutes/"),
+    enabled: !!token && enabled,
+  });
+}
+
+export function useRemindDriver() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiCreate(`/api/v1/shift-readiness/${id}/remind/`, {}),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+}
+
+/** Parent change-requests (Parent Requests tab). */
+export function useParentRequests(params: QueryParams = {}) {
+  return useList<ParentRequestItem>(["parent-requests", params], "/api/v1/requests/", params);
+}
+
+export function useParentRequest(id: string | null) {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<ParentRequestDetail>({
+    queryKey: ["parent-requests", id],
+    queryFn: () => apiGet<ParentRequestDetail>(`/api/v1/requests/${id}/`),
+    enabled: !!token && !!id,
+  });
+}
+
+/** Approve a request (applies the pickup change + reassigns the bus) or reject it. */
+export function useResolveRequest() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, action }: { id: string; action: "approve" | "reject" }) =>
+      apiCreate(`/api/v1/requests/${id}/${action}/`, {}),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["parent-requests"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-stats"] });
+    },
   });
 }
 

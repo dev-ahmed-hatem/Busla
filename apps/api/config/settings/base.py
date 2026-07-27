@@ -64,6 +64,8 @@ LOCAL_APPS = [
     "busla.people",
     "busla.routing",
     "busla.trips",
+    "busla.notifications",
+    "busla.requests",
     "busla.dashboard",
 ]
 

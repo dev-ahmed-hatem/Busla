@@ -73,6 +73,12 @@
     "viewRequest": "عرض الطلب",
     "findSubstitute": "إيجاد بديل",
     "sendReminder": "إرسال تذكير",
+    "reminderSent": "تم إرسال التذكير",
+    "markAllRead": "تعليم الكل كمقروء",
+    "substitutesTitle": "البدائل المتاحة",
+    "noSubstitutes": "لا يوجد سائقون متاحون حاليًا",
+    "loading": "جارٍ التحميل…",
+    "empty": "لا يوجد شيء بعد",
     "driversCheckedIn": "{checked} / {total} سائق سجّلوا الحضور"
   },
   "users": {

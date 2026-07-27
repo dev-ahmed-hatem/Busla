@@ -5,13 +5,12 @@ import { useTranslations } from "next-intl";
 import { Fragment } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { useUnreadCount } from "@/lib/api/hooks";
 import { useSession } from "@/lib/auth/session";
 import { cn } from "@/lib/utils/cn";
 
 import { LocaleSwitch } from "./locale-switch";
 import { SEGMENT_LABEL } from "./nav";
-
-const NOTIFICATION_COUNT = 20;
 
 function initials(name: string): string {
   return name
@@ -69,6 +68,8 @@ export function AppHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const t = useTranslations("common");
   const tRoles = useTranslations("roles");
   const user = useSession((s) => s.user);
+  const { data: unread } = useUnreadCount();
+  const unreadCount = unread?.count ?? 0;
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-surface px-4 sm:gap-4 sm:px-6">
@@ -112,9 +113,11 @@ export function AppHeader({ onMenuClick }: { onMenuClick?: () => void }) {
         className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-slate-100"
       >
         <Bell className="h-5 w-5 text-slate-600" />
-        <span className="absolute -end-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-status-issue px-1 text-[10px] font-semibold text-white">
-          {NOTIFICATION_COUNT}
-        </span>
+        {unreadCount > 0 && (
+          <span className="absolute -end-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-status-issue px-1 text-[10px] font-semibold text-white">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        )}
       </Link>
 
       <button

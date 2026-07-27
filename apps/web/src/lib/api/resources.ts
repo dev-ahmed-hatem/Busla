@@ -238,6 +238,75 @@ export interface DashboardStats {
   bus_capacity: CapacityRow[];
 }
 
+// --- Notifications (Phase 5) ---
+
+export type NotifGroup = "today" | "yesterday" | "earlier";
+
+export type TripNotifKind =
+  | "breakdown"
+  | "off_route"
+  | "trip_started"
+  | "delay"
+  | "completed"
+  | "parent_request"
+  | "reminder"
+  | "info";
+
+export interface TripNotif {
+  id: string;
+  kind: TripNotifKind;
+  title: string;
+  subtitle: string;
+  time: string;
+  group: NotifGroup;
+  is_read: boolean;
+}
+
+export interface UnreadCount {
+  count: number;
+}
+
+export interface ParentRequestItem {
+  id: string;
+  name: string;
+  zone: string;
+  reason: string;
+  time: string;
+  group: NotifGroup;
+  is_read: boolean;
+  status: string;
+}
+
+export interface ParentRequestDetail {
+  id: string;
+  date: string;
+  current: { address: string; route: string; tag: string };
+  requested: { address: string; status: string };
+  suggestion: { text: string; bus: string; seatsLeft: number; percent: number };
+  status: string;
+}
+
+export type CheckInState = "no_response" | "pending" | "checked_in";
+
+export interface DriverCheckin {
+  id: string;
+  name: string;
+  bus: string;
+  state: CheckInState;
+  detail: string;
+}
+
+export interface ShiftBoard {
+  summary: { time: string; checkedIn: number; total: number };
+  checkins: DriverCheckin[];
+}
+
+export interface Substitute {
+  id: string;
+  name: string;
+  bus: string | null;
+}
+
 export type QueryParams = Record<string, string | number | undefined>;
 
 function toQuery(params: QueryParams): string {

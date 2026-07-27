@@ -17,7 +17,9 @@ from datetime import time, timedelta
 from django.utils import timezone
 
 from busla.fleet.models import Bus
+from busla.notifications.models import DriverCheckIn, Notification
 from busla.people.models import Driver, Guardian, Student, Supervisor
+from busla.requests.models import ParentRequest
 from busla.routing.services import generate_routes
 from busla.tenancy.models import School
 from busla.trips.models import Trip
@@ -167,5 +169,53 @@ class Command(BaseCommand):
                     actual_departure=dep_a, actual_arrival=arr_a,
                 )
             self.stdout.write("Trips: 1 active + 3 logs")
+
+        # Notifications feed (today / yesterday / earlier, mixed read state).
+        if not Notification.objects.filter(school=school).exists():
+            now = timezone.now()
+            K = Notification.Kind
+            feed = [
+                (K.BREAKDOWN, "Bus 12 Breakdown", "Engine issue detected near Al Yasmine St. Trip is currently stopped", timedelta(minutes=10), False),
+                (K.OFF_ROUTE, "Bus 07 Off Route", "Bus is off the planned route for more than 5 minutes", timedelta(minutes=30), False),
+                (K.TRIP_STARTED, "Morning Trip Started", "Bus 05 has started the morning trip successfully", timedelta(hours=1), True),
+                (K.DELAY, "Delay Detected", "Bus 09 is delayed by 12 minutes", timedelta(hours=1, minutes=5), False),
+                (K.TRIP_STARTED, "Afternoon Trip Started", "Bus 02 has started the afternoon trip successfully", timedelta(days=1, hours=3), True),
+                (K.COMPLETED, "Trip Completed", "Bus 06 completed the morning trip successfully", timedelta(days=1, hours=4), True),
+                (K.DELAY, "Delay Detected", "Bus 09 is delayed by 12 minutes", timedelta(days=6, hours=3), True),
+                (K.TRIP_STARTED, "Morning Trip Started", "Bus 05 has started the morning trip successfully", timedelta(days=6, hours=5), True),
+            ]
+            for kind, title, sub, ago, read in feed:
+                Notification.objects.create(
+                    school=school, kind=kind, title=title, subtitle=sub, is_read=read, occurred_at=now - ago
+                )
+
+        # Parent requests (pending) tied to students.
+        if not ParentRequest.objects.filter(school=school).exists():
+            demo_reqs = [
+                ("Al Narges", "Requested a pickup address change", "Building 55, Street 10, El Tagamoa El 5, New Cairo"),
+                ("New Cairo", "Minor stop adjustment needed", "Building 12, Street 45, Fifth Settlement, New Cairo"),
+                ("Shorouk", "Requested a pickup address change", "Villa 7, Shorouk City, Gate 3"),
+            ]
+            for i, st in enumerate(Student.objects.filter(school=school)[:3]):
+                area, reason, addr = demo_reqs[i % len(demo_reqs)]
+                ParentRequest.objects.create(
+                    school=school, student=st, requested_area=area, reason=reason,
+                    requested_address=addr, occurred_at=timezone.now() - timedelta(minutes=10 * (i + 1)),
+                )
+
+        # Driver shift-readiness check-ins for today.
+        if not DriverCheckIn.objects.filter(school=school).exists():
+            states = [
+                (DriverCheckIn.State.CHECKED_IN, time(4, 0), 0),
+                (DriverCheckIn.State.PENDING, None, 18),
+                (DriverCheckIn.State.NO_RESPONSE, None, 0),
+            ]
+            for i, d in enumerate(Driver.objects.filter(school=school)):
+                state, cat, pm = states[i % len(states)]
+                DriverCheckIn.objects.create(
+                    school=school, driver=d, service_date=timezone.localdate(), shift="morning",
+                    state=state, checked_in_at=cat, pending_minutes=pm,
+                )
+            self.stdout.write("Notifications + parent requests + check-ins seeded")
 
         self.stdout.write(self.style.SUCCESS(f"\nDone. Password for all demo users: {DEMO_PASSWORD}"))

@@ -1,7 +1,7 @@
 "use client";
 
 import { StatusPill } from "@busla/ui";
-import { Bus as BusIcon, Gauge, IdCard, User, Users, Wrench, X, type LucideIcon } from "lucide-react";
+import { Bus as BusIcon, Gauge, IdCard, MapPin, User, Users, Wrench, X, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -79,6 +79,7 @@ export function BusProfileModal({ bus, onClose }: { bus: Bus | null; onClose: ()
 
               {tab === "route" && (
                 <div>
+                  <InfoRow icon={MapPin} label={t("route.route")} value={bus.route_name ?? "—"} />
                   <InfoRow icon={BusIcon} label={t("info.model")} value={bus.model_name || "—"} />
                   <InfoRow icon={Gauge} label={t("route.odometer")} value={`${bus.odometer_km} km`} />
                 </div>

@@ -26,6 +26,7 @@ interface PersonRow {
   full_name: string;
   phone: string;
   area: string;
+  route_name: string | null;
   bus_number: string | null;
   status: string;
 }
@@ -73,6 +74,12 @@ export function UsersView() {
     ) },
     { key: "phone", header: t("cols.phone"), render: (r) => <span className="text-slate-600">{r.phone || "—"}</span> },
     { key: "area", header: t("cols.area"), render: (r) => <span className="text-slate-600">{r.area || "—"}</span> },
+    { key: "route", header: t("cols.route"), render: (r) =>
+      r.route_name ? (
+        <span className="text-slate-600">{r.route_name}</span>
+      ) : (
+        <span className="tracking-widest text-slate-300">----------</span>
+      ) },
     { key: "bus", header: t("cols.bus"), render: (r) => (
       <span className="inline-flex items-center gap-1.5 text-slate-600">
         <Bus className="h-4 w-4 text-brand-amber" />

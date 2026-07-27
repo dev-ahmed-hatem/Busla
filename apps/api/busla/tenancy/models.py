@@ -16,6 +16,8 @@ class School(BaseModel):
     name_ar = models.CharField(max_length=200, blank=True)
     timezone = models.CharField(max_length=64, default="Africa/Cairo")
     default_arrival_deadline = models.TimeField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     logo = models.ImageField(upload_to="schools/", null=True, blank=True)
     is_active = models.BooleanField(default=True)
 

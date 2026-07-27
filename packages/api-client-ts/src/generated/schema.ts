@@ -163,6 +163,22 @@ export interface paths {
         patch: operations["v1_buses_partial_update"];
         trace?: never;
     };
+    "/api/v1/dashboard/stats/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["dashboard_stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/drivers/": {
         parameters: {
             query?: never;
@@ -248,6 +264,78 @@ export interface paths {
         };
         /** @description Unauthenticated liveness probe. */
         get: operations["health_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/routes/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        get: operations["v1_routes_list"];
+        put?: never;
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        post: operations["v1_routes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/routes/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        get: operations["v1_routes_retrieve"];
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        put: operations["v1_routes_update"];
+        post?: never;
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        delete: operations["v1_routes_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        patch: operations["v1_routes_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/routes/optimize/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        post: operations["v1_routes_optimize_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/routes/readiness/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD viewset scoped to the authenticated admin's school. */
+        get: operations["v1_routes_readiness_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -351,6 +439,7 @@ export interface components {
             /** Format: date */
             last_maintenance_at?: string | null;
             readonly driver_name: string | null;
+            readonly route_name: string | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
@@ -376,6 +465,20 @@ export interface components {
          * @enum {string}
          */
         BusStatusEnum: "in_service" | "maintenance" | "issue";
+        CapacityRow: {
+            bus: string;
+            route: string | null;
+            capacity: number;
+            occupied: number;
+            available: number;
+        };
+        DashboardStats: {
+            buses: components["schemas"]["Kpi"];
+            drivers: components["schemas"]["Kpi"];
+            supervisors: components["schemas"]["Kpi"];
+            students: components["schemas"]["Kpi"];
+            bus_capacity: components["schemas"]["CapacityRow"][];
+        };
         DeviceRegister: {
             token: string;
             platform: components["schemas"]["PlatformEnum"];
@@ -399,6 +502,7 @@ export interface components {
             /** Format: uuid */
             bus?: string | null;
             readonly bus_number: string | null;
+            readonly route_name: string | null;
             status?: components["schemas"]["StaffStatusEnum"];
             /** Format: date-time */
             readonly created_at: string;
@@ -454,6 +558,20 @@ export interface components {
          */
         HealthStatusEnum: "ok" | "degraded";
         /**
+         * @description * `supervisor_home` - Supervisor home
+         *     * `student` - Student
+         *     * `school` - School
+         * @enum {string}
+         */
+        KindEnum: "supervisor_home" | "student" | "school";
+        Kpi: {
+            total: number;
+            active: number;
+            inactive: number;
+            /** Format: double */
+            utilization: number;
+        };
+        /**
          * @description * `en` - en
          *     * `ar` - ar
          * @enum {string}
@@ -463,6 +581,16 @@ export interface components {
         LoginRequest: {
             email: string;
             password: string;
+        };
+        OptimizeParamsRequest: {
+            num_buses: number;
+            seats_per_bus: number;
+            /** @default morning */
+            shift: components["schemas"]["ShiftEnum"];
+            /** Format: time */
+            arrival_deadline?: string | null;
+            /** @default false */
+            multi_shift: boolean;
         };
         PaginatedBusList: {
             /** @example 123 */
@@ -508,6 +636,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Guardian"][];
+        };
+        PaginatedRouteList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Route"][];
         };
         PaginatedStudentList: {
             /** @example 123 */
@@ -584,6 +727,18 @@ export interface components {
             email?: string;
             is_primary?: boolean;
         };
+        PatchedRouteRequest: {
+            code?: string;
+            name?: string;
+            shift?: components["schemas"]["ShiftEnum"];
+            area?: string;
+            /** Format: uuid */
+            bus?: string | null;
+            /** Format: uuid */
+            driver?: string | null;
+            /** Format: uuid */
+            supervisor?: string | null;
+        };
         PatchedStudentRequest: {
             full_name?: string;
             /** Format: date */
@@ -620,6 +775,75 @@ export interface components {
          * @enum {string}
          */
         RelationshipEnum: "mother" | "father" | "other";
+        Route: {
+            /** Format: uuid */
+            readonly id: string;
+            code: string;
+            name?: string;
+            shift?: components["schemas"]["ShiftEnum"];
+            area?: string;
+            /** Format: uuid */
+            bus?: string | null;
+            readonly bus_number: string | null;
+            /** Format: uuid */
+            driver?: string | null;
+            readonly driver_name: string | null;
+            /** Format: uuid */
+            supervisor?: string | null;
+            readonly supervisor_name: string | null;
+            readonly status: components["schemas"]["RouteStatusEnum"];
+            /** Format: double */
+            readonly distance_km: number;
+            readonly duration_min: number;
+            readonly student_count: number;
+            readonly capacity: number | null;
+            readonly stops: components["schemas"]["RouteStop"][];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        RouteRequest: {
+            code: string;
+            name?: string;
+            shift?: components["schemas"]["ShiftEnum"];
+            area?: string;
+            /** Format: uuid */
+            bus?: string | null;
+            /** Format: uuid */
+            driver?: string | null;
+            /** Format: uuid */
+            supervisor?: string | null;
+        };
+        /**
+         * @description * `draft` - Draft
+         *     * `incomplete` - Incomplete
+         *     * `ready` - Ready
+         * @enum {string}
+         */
+        RouteStatusEnum: "draft" | "incomplete" | "ready";
+        RouteStop: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly sequence: number;
+            readonly kind: components["schemas"]["KindEnum"];
+            /** Format: uuid */
+            readonly student: string | null;
+            readonly student_name: string | null;
+            readonly label: string;
+            /** Format: double */
+            readonly latitude: number | null;
+            /** Format: double */
+            readonly longitude: number | null;
+            /** Format: time */
+            readonly eta: string | null;
+        };
+        /**
+         * @description * `morning` - Morning
+         *     * `afternoon` - Afternoon
+         * @enum {string}
+         */
+        ShiftEnum: "morning" | "afternoon";
         /**
          * @description * `active` - Active
          *     * `off_duty` - Off-Duty
@@ -641,6 +865,9 @@ export interface components {
             /** Format: uuid */
             bus?: string | null;
             readonly bus_number: string | null;
+            /** Format: uuid */
+            readonly route: string | null;
+            readonly route_name: string | null;
             status?: components["schemas"]["StudentStatusEnum"];
             readonly guardians: components["schemas"]["Guardian"][];
             /** Format: date-time */
@@ -679,6 +906,7 @@ export interface components {
             /** Format: uuid */
             bus?: string | null;
             readonly bus_number: string | null;
+            readonly route_name: string | null;
             status?: components["schemas"]["StaffStatusEnum"];
             /** Format: date-time */
             readonly created_at: string;
@@ -1051,6 +1279,25 @@ export interface operations {
             };
         };
     };
+    dashboard_stats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardStats"];
+                };
+            };
+        };
+    };
     v1_drivers_list: {
         parameters: {
             query?: {
@@ -1386,6 +1633,239 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    v1_routes_list: {
+        parameters: {
+            query?: {
+                area?: string;
+                bus?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+                /**
+                 * @description * `morning` - Morning
+                 *     * `afternoon` - Afternoon
+                 */
+                shift?: "afternoon" | "morning";
+                /**
+                 * @description * `draft` - Draft
+                 *     * `incomplete` - Incomplete
+                 *     * `ready` - Ready
+                 */
+                status?: "draft" | "incomplete" | "ready";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedRouteList"];
+                };
+            };
+        };
+    };
+    v1_routes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RouteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RouteRequest"];
+                "multipart/form-data": components["schemas"]["RouteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Route"];
+                };
+            };
+        };
+    };
+    v1_routes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this route. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Route"];
+                };
+            };
+        };
+    };
+    v1_routes_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this route. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RouteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RouteRequest"];
+                "multipart/form-data": components["schemas"]["RouteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Route"];
+                };
+            };
+        };
+    };
+    v1_routes_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this route. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_routes_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this route. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedRouteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedRouteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedRouteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Route"];
+                };
+            };
+        };
+    };
+    v1_routes_optimize_create: {
+        parameters: {
+            query?: {
+                area?: string;
+                bus?: string;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+                /**
+                 * @description * `morning` - Morning
+                 *     * `afternoon` - Afternoon
+                 */
+                shift?: "afternoon" | "morning";
+                /**
+                 * @description * `draft` - Draft
+                 *     * `incomplete` - Incomplete
+                 *     * `ready` - Ready
+                 */
+                status?: "draft" | "incomplete" | "ready";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OptimizeParamsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OptimizeParamsRequest"];
+                "multipart/form-data": components["schemas"]["OptimizeParamsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedRouteList"];
+                };
+            };
+        };
+    };
+    v1_routes_readiness_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

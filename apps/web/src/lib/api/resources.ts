@@ -21,6 +21,7 @@ export interface Bus {
   breakdown_reason: string;
   last_maintenance_at: string | null;
   driver_name: string | null;
+  route_name: string | null;
 }
 
 export interface Guardian {
@@ -72,6 +73,51 @@ export interface Supervisor {
   bus: string | null;
   bus_number: string | null;
   status: string;
+}
+
+export interface RouteStop {
+  id: string;
+  sequence: number;
+  kind: string;
+  student: string | null;
+  student_name: string | null;
+  label: string;
+  latitude: number | null;
+  longitude: number | null;
+  eta: string | null;
+}
+
+export interface Route {
+  id: string;
+  code: string;
+  name: string;
+  shift: string;
+  area: string;
+  bus: string | null;
+  bus_number: string | null;
+  driver: string | null;
+  driver_name: string | null;
+  supervisor: string | null;
+  supervisor_name: string | null;
+  status: string;
+  distance_km: number;
+  duration_min: number;
+  student_count: number;
+  capacity: number | null;
+  stops: RouteStop[];
+}
+
+export interface RouteReadiness {
+  students_ready: number;
+  routes_count: number;
+}
+
+export interface OptimizeParams {
+  num_buses: number;
+  seats_per_bus: number;
+  shift?: string;
+  multi_shift?: boolean;
+  arrival_deadline?: string | null;
 }
 
 export interface Kpi {

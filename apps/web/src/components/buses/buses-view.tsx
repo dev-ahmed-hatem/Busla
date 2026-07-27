@@ -53,7 +53,7 @@ export function BusesView() {
       </span>
     ) },
     { key: "license_plate", header: t("cols.license"), render: (r) => <span dir="rtl" className="text-slate-600">{r.license_plate || "—"}</span> },
-    { key: "model_name", header: t("cols.route"), render: (r) => <span className="text-slate-600">{r.model_name || "—"}</span> },
+    { key: "route", header: t("cols.route"), render: (r) => <span className="text-slate-600">{r.route_name ?? "—"}</span> },
     { key: "last_maintenance_at", header: t("cols.lastMaintenance"), render: (r) => <span className="text-slate-600">{r.last_maintenance_at ?? "—"}</span> },
     { key: "status", header: t("cols.status"), render: (r) => <StatusPill status={r.status} label={humanizeStatus(r.status)} /> },
     { key: "breakdown_reason", header: t("cols.breakdown"), render: (r) => (r.breakdown_reason ? <span className="text-slate-600">{r.breakdown_reason}</span> : <span className="text-slate-300">—</span>) },

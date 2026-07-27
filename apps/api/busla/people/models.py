@@ -26,8 +26,13 @@ class Student(TenantScopedModel):
     area = models.CharField(max_length=120, blank=True)
     address = models.TextField(blank=True)
     phone = models.CharField(max_length=32, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     bus = models.ForeignKey(
         "fleet.Bus", null=True, blank=True, on_delete=models.SET_NULL, related_name="students"
+    )
+    route = models.ForeignKey(
+        "routing.Route", null=True, blank=True, on_delete=models.SET_NULL, related_name="students"
     )
     status = models.CharField(max_length=16, choices=Status.choices, default=Status.SCHEDULED)
 
@@ -86,6 +91,8 @@ class Supervisor(TenantScopedModel):
     national_id = models.CharField(max_length=32, blank=True)
     area = models.CharField(max_length=120, blank=True)
     address = models.TextField(blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     bus = models.ForeignKey(
         "fleet.Bus", null=True, blank=True, on_delete=models.SET_NULL, related_name="supervisors"
     )

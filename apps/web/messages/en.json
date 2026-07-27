@@ -259,6 +259,62 @@
     "area": "Area",
     "statusFilter": "Status"
   },
+  "routePlanning": {
+    "title": "Route Planning",
+    "subtitleEmpty": "Automate your route planning instantly. Our AI analyzes your student list and maps their locations to create the most efficient routes for your fleet.",
+    "subtitle": "Routes generated and optimized. Review your fleet's routes below; re-optimize when your constraints or student list change.",
+    "refreshData": "Refresh Data",
+    "reoptimize": "Re-optimize Routes",
+    "studentsReady": "{count} Students Ready for Route Planning",
+    "readyHint": "AI is ready to optimize routes for maximum efficiency.",
+    "configurePlan": "Configure & Plan Routes",
+    "routes": "Routes",
+    "addRoute": "Add New Route",
+    "search": "Search by Bus no. or Driver name…",
+    "assignDriver": "Assign driver",
+    "view": "View",
+    "delete": "Delete",
+    "cols": {
+      "route": "Route",
+      "bus": "Bus",
+      "students": "Students",
+      "distance": "Distance",
+      "duration": "Est. Duration",
+      "driver": "Driver",
+      "nannyStop": "Nanny stop",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "settings": {
+      "title": "Route Optimization Settings",
+      "subtitle": "Configure your fleet and arrival constraints. Our AI generates the most efficient routes.",
+      "numBuses": "Number of Buses",
+      "seatsPerBus": "Seats per Bus",
+      "arrivalDeadline": "School Arrival Deadline",
+      "multiShift": "Enable Multi-Shift Scheduling (Double-shifting) per driver",
+      "shift": "Shift",
+      "cancel": "Cancel",
+      "run": "Run AI Optimization",
+      "running": "Optimizing…"
+    },
+    "detail": {
+      "stops": "Stops",
+      "distance": "Total Distance",
+      "duration": "Estimated Duration",
+      "close": "Close"
+    },
+    "add": {
+      "title": "Add New Route",
+      "subtitle": "Create a manual route — assign bus, driver, and supervisor.",
+      "routeId": "Route ID",
+      "name": "Route name",
+      "bus": "Bus",
+      "shift": "Shift",
+      "driver": "Driver",
+      "supervisor": "Supervisor",
+      "save": "Save Route"
+    }
+  },
   "common": {
     "loading": "Loading…",
     "search": "Search",

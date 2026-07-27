@@ -48,7 +48,7 @@ class DashboardStatsView(APIView):
             "bus_capacity": [
                 {
                     "bus": b.bus_number,
-                    "route": b.model_name or None,
+                    "route": (r.name if (r := b.routes.filter(is_deleted=False).first()) else None),
                     "capacity": b.capacity,
                     "occupied": b.occupied,
                     "available": max(0, b.capacity - b.occupied),

@@ -11,11 +11,20 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+import random
+
 from busla.fleet.models import Bus
 from busla.people.models import Driver, Guardian, Student, Supervisor
+from busla.routing.services import generate_routes
 from busla.tenancy.models import School
 
 User = get_user_model()
+
+DEPOT = (30.0074, 31.4913)  # ≈ New Cairo
+
+
+def _coord() -> tuple[float, float]:
+    return (DEPOT[0] + random.uniform(-0.05, 0.05), DEPOT[1] + random.uniform(-0.05, 0.05))
 
 DEMO_BUSES = [
     ("Bus 05", "maintenance", "Engine"),
@@ -53,6 +62,9 @@ class Command(BaseCommand):
             name="Busla Demo School",
             defaults={"name_ar": "مدرسة بصلة التجريبية"},
         )
+        if school.latitude is None:
+            school.latitude, school.longitude = DEPOT
+            school.save(update_fields=["latitude", "longitude"])
         self.stdout.write(f"School: {'created' if created else 'exists'} — {school.name}")
 
         for email, full_name, user_type in DEMO_USERS:
@@ -95,16 +107,22 @@ class Command(BaseCommand):
                 defaults={"status": dstatus, "phone": "011234567890", "area": "New Cairo", "bus": buses[i]},
             )
         for i, (name, sstatus) in enumerate(DEMO_SUPERVISORS):
+            lat, lng = _coord()
             Supervisor.objects.get_or_create(
                 school=school, full_name=name,
-                defaults={"status": sstatus, "phone": "011234567890", "area": "New Cairo", "bus": buses[i]},
+                defaults={
+                    "status": sstatus, "phone": "011234567890", "area": "New Cairo",
+                    "bus": buses[i], "latitude": lat, "longitude": lng,
+                },
             )
         for i, (name, ststatus) in enumerate(DEMO_STUDENTS):
+            lat, lng = _coord()
             student, created = Student.objects.get_or_create(
                 school=school, full_name=name,
                 defaults={
                     "status": ststatus, "grade": "Primary 3", "class_name": "3A",
                     "area": "New Cairo", "bus": buses[i % len(buses)],
+                    "latitude": lat, "longitude": lng,
                 },
             )
             if created:
@@ -113,5 +131,8 @@ class Command(BaseCommand):
                     phone="01234567789", email="sara@example.com", is_primary=True,
                 )
         self.stdout.write(f"Drivers: {len(DEMO_DRIVERS)}  Supervisors: {len(DEMO_SUPERVISORS)}  Students: {len(DEMO_STUDENTS)}")
+
+        routes = generate_routes(school, num_buses=len(buses), seats_per_bus=25)
+        self.stdout.write(f"Routes generated: {len(routes)}")
 
         self.stdout.write(self.style.SUCCESS(f"\nDone. Password for all demo users: {DEMO_PASSWORD}"))

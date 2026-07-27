@@ -11,9 +11,35 @@ import {
   apiList,
   apiPatch,
   type DashboardStats,
+  type OptimizeParams,
   type Paginated,
   type QueryParams,
+  type Route,
+  type RouteReadiness,
 } from "./resources";
+
+/** Route Planning readiness (student/route counts for the empty state). */
+export function useRouteReadiness() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<RouteReadiness>({
+    queryKey: ["route-readiness"],
+    queryFn: () => apiGet<RouteReadiness>("/api/v1/routes/readiness/"),
+    enabled: !!token,
+  });
+}
+
+/** Run the optimizer; refreshes routes, readiness, and dashboard stats. */
+export function useOptimize() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (params: OptimizeParams) => apiCreate<Route[]>("/api/v1/routes/optimize/", params),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["routes"] });
+      qc.invalidateQueries({ queryKey: ["route-readiness"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-stats"] });
+    },
+  });
+}
 
 /** Dashboard aggregate stats (KPIs + bus capacity). */
 export function useDashboardStats() {

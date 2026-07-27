@@ -62,6 +62,7 @@ LOCAL_APPS = [
     "busla.health",
     "busla.fleet",
     "busla.people",
+    "busla.routing",
     "busla.dashboard",
 ]
 

@@ -336,6 +336,20 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/dashboard/stats/:
+    get:
+      operationId: dashboard_stats
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+          description: ''
   /api/v1/drivers/:
     get:
       operationId: v1_drivers_list
@@ -740,6 +754,310 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+          description: ''
+  /api/v1/routes/:
+    get:
+      operationId: v1_routes_list
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: query
+        name: area
+        schema:
+          type: string
+      - in: query
+        name: bus
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: shift
+        schema:
+          type: string
+          enum:
+          - afternoon
+          - morning
+        description: |-
+          * `morning` - Morning
+          * `afternoon` - Afternoon
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - draft
+          - incomplete
+          - ready
+        description: |-
+          * `draft` - Draft
+          * `incomplete` - Incomplete
+          * `ready` - Ready
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRouteList'
+          description: ''
+    post:
+      operationId: v1_routes_create
+      description: CRUD viewset scoped to the authenticated admin's school.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+          description: ''
+  /api/v1/routes/{id}/:
+    get:
+      operationId: v1_routes_retrieve
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this route.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+          description: ''
+    put:
+      operationId: v1_routes_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this route.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+          description: ''
+    patch:
+      operationId: v1_routes_partial_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this route.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRouteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRouteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRouteRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+          description: ''
+    delete:
+      operationId: v1_routes_destroy
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this route.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/routes/optimize/:
+    post:
+      operationId: v1_routes_optimize_create
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: query
+        name: area
+        schema:
+          type: string
+      - in: query
+        name: bus
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: shift
+        schema:
+          type: string
+          enum:
+          - afternoon
+          - morning
+        description: |-
+          * `morning` - Morning
+          * `afternoon` - Afternoon
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - draft
+          - incomplete
+          - ready
+        description: |-
+          * `draft` - Draft
+          * `incomplete` - Incomplete
+          * `ready` - Ready
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OptimizeParamsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OptimizeParamsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OptimizeParamsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRouteList'
+          description: ''
+  /api/v1/routes/readiness/:
+    get:
+      operationId: v1_routes_readiness_retrieve
+      description: CRUD viewset scoped to the authenticated admin's school.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
           description: ''
   /api/v1/students/:
     get:
@@ -1176,6 +1494,10 @@ components:
           type: string
           nullable: true
           readOnly: true
+        route_name:
+          type: string
+          nullable: true
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -1189,6 +1511,7 @@ components:
       - created_at
       - driver_name
       - id
+      - route_name
       - updated_at
     BusRequest:
       type: object
@@ -1234,6 +1557,47 @@ components:
         * `in_service` - In Service
         * `maintenance` - Maintenance
         * `issue` - Issue
+    CapacityRow:
+      type: object
+      properties:
+        bus:
+          type: string
+        route:
+          type: string
+          nullable: true
+        capacity:
+          type: integer
+        occupied:
+          type: integer
+        available:
+          type: integer
+      required:
+      - available
+      - bus
+      - capacity
+      - occupied
+      - route
+    DashboardStats:
+      type: object
+      properties:
+        buses:
+          $ref: '#/components/schemas/Kpi'
+        drivers:
+          $ref: '#/components/schemas/Kpi'
+        supervisors:
+          $ref: '#/components/schemas/Kpi'
+        students:
+          $ref: '#/components/schemas/Kpi'
+        bus_capacity:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapacityRow'
+      required:
+      - bus_capacity
+      - buses
+      - drivers
+      - students
+      - supervisors
     DeviceRegister:
       type: object
       properties:
@@ -1297,6 +1661,10 @@ components:
           type: string
           nullable: true
           readOnly: true
+        route_name:
+          type: string
+          nullable: true
+          readOnly: true
         status:
           $ref: '#/components/schemas/StaffStatusEnum'
         created_at:
@@ -1312,6 +1680,7 @@ components:
       - created_at
       - full_name
       - id
+      - route_name
       - updated_at
     DriverRequest:
       type: object
@@ -1435,6 +1804,33 @@ components:
       description: |-
         * `ok` - ok
         * `degraded` - degraded
+    KindEnum:
+      enum:
+      - supervisor_home
+      - student
+      - school
+      type: string
+      description: |-
+        * `supervisor_home` - Supervisor home
+        * `student` - Student
+        * `school` - School
+    Kpi:
+      type: object
+      properties:
+        total:
+          type: integer
+        active:
+          type: integer
+        inactive:
+          type: integer
+        utilization:
+          type: number
+          format: double
+      required:
+      - active
+      - inactive
+      - total
+      - utilization
     LocaleEnum:
       enum:
       - en
@@ -1459,6 +1855,29 @@ components:
       required:
       - email
       - password
+    OptimizeParamsRequest:
+      type: object
+      properties:
+        num_buses:
+          type: integer
+          minimum: 1
+        seats_per_bus:
+          type: integer
+          minimum: 1
+        shift:
+          allOf:
+          - $ref: '#/components/schemas/ShiftEnum'
+          default: morning
+        arrival_deadline:
+          type: string
+          format: time
+          nullable: true
+        multi_shift:
+          type: boolean
+          default: false
+      required:
+      - num_buses
+      - seats_per_bus
     PaginatedBusList:
       type: object
       required:
@@ -1528,6 +1947,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Guardian'
+    PaginatedRouteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Route'
     PaginatedStudentList:
       type: object
       required:
@@ -1691,6 +2133,33 @@ components:
             maxLength: 0
         is_primary:
           type: boolean
+    PatchedRouteRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 16
+        name:
+          type: string
+          maxLength: 120
+        shift:
+          $ref: '#/components/schemas/ShiftEnum'
+        area:
+          type: string
+          maxLength: 120
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        driver:
+          type: string
+          format: uuid
+          nullable: true
+        supervisor:
+          type: string
+          format: uuid
+          nullable: true
     PatchedStudentRequest:
       type: object
       properties:
@@ -1764,6 +2233,191 @@ components:
         * `mother` - Mother
         * `father` - Father
         * `other` - Other
+    Route:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 16
+        name:
+          type: string
+          maxLength: 120
+        shift:
+          $ref: '#/components/schemas/ShiftEnum'
+        area:
+          type: string
+          maxLength: 120
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        bus_number:
+          type: string
+          nullable: true
+          readOnly: true
+        driver:
+          type: string
+          format: uuid
+          nullable: true
+        driver_name:
+          type: string
+          nullable: true
+          readOnly: true
+        supervisor:
+          type: string
+          format: uuid
+          nullable: true
+        supervisor_name:
+          type: string
+          nullable: true
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/RouteStatusEnum'
+          readOnly: true
+        distance_km:
+          type: number
+          format: double
+          readOnly: true
+        duration_min:
+          type: integer
+          readOnly: true
+        student_count:
+          type: integer
+          readOnly: true
+        capacity:
+          type: integer
+          nullable: true
+          readOnly: true
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteStop'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - bus_number
+      - capacity
+      - code
+      - created_at
+      - distance_km
+      - driver_name
+      - duration_min
+      - id
+      - status
+      - stops
+      - student_count
+      - supervisor_name
+      - updated_at
+    RouteRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 16
+        name:
+          type: string
+          maxLength: 120
+        shift:
+          $ref: '#/components/schemas/ShiftEnum'
+        area:
+          type: string
+          maxLength: 120
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        driver:
+          type: string
+          format: uuid
+          nullable: true
+        supervisor:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - code
+    RouteStatusEnum:
+      enum:
+      - draft
+      - incomplete
+      - ready
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `incomplete` - Incomplete
+        * `ready` - Ready
+    RouteStop:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        sequence:
+          type: integer
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/KindEnum'
+          readOnly: true
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        student_name:
+          type: string
+          nullable: true
+          readOnly: true
+        label:
+          type: string
+          readOnly: true
+        latitude:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+        eta:
+          type: string
+          format: time
+          readOnly: true
+          nullable: true
+      required:
+      - eta
+      - id
+      - kind
+      - label
+      - latitude
+      - longitude
+      - sequence
+      - student
+      - student_name
+    ShiftEnum:
+      enum:
+      - morning
+      - afternoon
+      type: string
+      description: |-
+        * `morning` - Morning
+        * `afternoon` - Afternoon
     StaffStatusEnum:
       enum:
       - active
@@ -1810,6 +2464,15 @@ components:
           type: string
           nullable: true
           readOnly: true
+        route:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        route_name:
+          type: string
+          nullable: true
+          readOnly: true
         status:
           $ref: '#/components/schemas/StudentStatusEnum'
         guardians:
@@ -1831,6 +2494,8 @@ components:
       - full_name
       - guardians
       - id
+      - route
+      - route_name
       - updated_at
     StudentRequest:
       type: object
@@ -1904,6 +2569,10 @@ components:
           type: string
           nullable: true
           readOnly: true
+        route_name:
+          type: string
+          nullable: true
+          readOnly: true
         status:
           $ref: '#/components/schemas/StaffStatusEnum'
         created_at:
@@ -1919,6 +2588,7 @@ components:
       - created_at
       - full_name
       - id
+      - route_name
       - updated_at
     SupervisorRequest:
       type: object

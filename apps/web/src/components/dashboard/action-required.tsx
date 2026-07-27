@@ -1,3 +1,5 @@
+"use client";
+
 import { TONE_VAR, type StatusTone } from "@busla/ui";
 import {
   AlertTriangle,
@@ -10,14 +12,10 @@ import {
 import { useTranslations } from "next-intl";
 
 import { Card, CardHeader } from "@/components/ui/card";
-import {
-  ACTION_ITEMS,
-  ACTION_REQUIRED_COUNT,
-  type ActionItem,
-  type ActionKind,
-} from "@/lib/mock/dashboard";
+import { useTripOverview } from "@/lib/api/hooks";
+import type { ActionItem } from "@/lib/api/resources";
 
-const KIND_META: Record<ActionKind, { icon: LucideIcon; tone: StatusTone }> = {
+const KIND_META: Record<ActionItem["kind"], { icon: LucideIcon; tone: StatusTone }> = {
   breakdown: { icon: AlertTriangle, tone: "issue" },
   off_route: { icon: MapPin, tone: "issue" },
   absent: { icon: UserX, tone: "delayed" },
@@ -26,7 +24,7 @@ const KIND_META: Record<ActionKind, { icon: LucideIcon; tone: StatusTone }> = {
 
 function Row({ item }: { item: ActionItem }) {
   const t = useTranslations("dashboard");
-  const { icon: Icon, tone } = KIND_META[item.kind];
+  const { icon: Icon, tone } = KIND_META[item.kind] ?? KIND_META.request;
   const color = TONE_VAR[tone];
 
   return (
@@ -51,22 +49,29 @@ function Row({ item }: { item: ActionItem }) {
 
 export function ActionRequired() {
   const t = useTranslations("dashboard");
+  const { data } = useTripOverview();
+  const items = data?.action_required ?? [];
+
   return (
     <Card>
       <CardHeader
         title={t("actionRequired")}
-        count={ACTION_REQUIRED_COUNT}
+        count={items.length}
         action={
           <button type="button" className="text-sm font-medium text-status-info">
             {t("viewAll")}
           </button>
         }
       />
-      <ul>
-        {ACTION_ITEMS.map((item) => (
-          <Row key={item.id} item={item} />
-        ))}
-      </ul>
+      {items.length === 0 ? (
+        <p className="py-8 text-center text-sm text-slate-400">—</p>
+      ) : (
+        <ul>
+          {items.map((item) => (
+            <Row key={item.id} item={item} />
+          ))}
+        </ul>
+      )}
     </Card>
   );
 }

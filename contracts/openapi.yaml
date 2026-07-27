@@ -1453,6 +1453,322 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/trips/:
+    get:
+      operationId: v1_trips_list
+      description: |-
+        Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+        direct POST, so this is read-only with explicit POST actions.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: service_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: shift
+        schema:
+          type: string
+          enum:
+          - afternoon
+          - morning
+        description: |-
+          * `morning` - Morning
+          * `afternoon` - Afternoon
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - broken_down
+          - completed
+          - delayed
+          - off_route
+          - on_time
+          - scheduled
+        description: |-
+          * `scheduled` - Scheduled
+          * `on_time` - On-time
+          * `delayed` - Delayed
+          * `off_route` - Off-route
+          * `broken_down` - Broken down
+          * `completed` - Completed
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTripDetailList'
+          description: ''
+  /api/v1/trips/{id}/:
+    get:
+      operationId: v1_trips_retrieve
+      description: |-
+        Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+        direct POST, so this is read-only with explicit POST actions.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this trip.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripDetail'
+          description: ''
+  /api/v1/trips/{id}/position/:
+    post:
+      operationId: v1_trips_position_create
+      description: |-
+        Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+        direct POST, so this is read-only with explicit POST actions.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this trip.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripPositionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TripPositionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TripPositionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiveJourney'
+          description: ''
+  /api/v1/trips/live/:
+    get:
+      operationId: v1_trips_live_list
+      description: |-
+        Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+        direct POST, so this is read-only with explicit POST actions.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: service_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: shift
+        schema:
+          type: string
+          enum:
+          - afternoon
+          - morning
+        description: |-
+          * `morning` - Morning
+          * `afternoon` - Afternoon
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - broken_down
+          - completed
+          - delayed
+          - off_route
+          - on_time
+          - scheduled
+        description: |-
+          * `scheduled` - Scheduled
+          * `on_time` - On-time
+          * `delayed` - Delayed
+          * `off_route` - Off-route
+          * `broken_down` - Broken down
+          * `completed` - Completed
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLiveJourneyList'
+          description: ''
+  /api/v1/trips/logs/:
+    get:
+      operationId: v1_trips_logs_list
+      description: |-
+        Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+        direct POST, so this is read-only with explicit POST actions.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: service_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: shift
+        schema:
+          type: string
+          enum:
+          - afternoon
+          - morning
+        description: |-
+          * `morning` - Morning
+          * `afternoon` - Afternoon
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - broken_down
+          - completed
+          - delayed
+          - off_route
+          - on_time
+          - scheduled
+        description: |-
+          * `scheduled` - Scheduled
+          * `on_time` - On-time
+          * `delayed` - Delayed
+          * `off_route` - Off-route
+          * `broken_down` - Broken down
+          * `completed` - Completed
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJourneyLogList'
+          description: ''
+  /api/v1/trips/logs-summary/:
+    get:
+      operationId: v1_trips_logs_summary_retrieve
+      description: |-
+        Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+        direct POST, so this is read-only with explicit POST actions.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripDetail'
+          description: ''
+  /api/v1/trips/overview/:
+    get:
+      operationId: v1_trips_overview_retrieve
+      description: 'Dashboard trip widgets: status donut, action-required, live map
+        pins (today).'
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
 components:
   schemas:
     Bus:
@@ -1804,6 +2120,55 @@ components:
       description: |-
         * `ok` - ok
         * `degraded` - degraded
+    JourneyLog:
+      type: object
+      description: Historical (finished) trip row for the Journey Logs table.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        bus:
+          type: string
+          readOnly: true
+        driver:
+          type: string
+          readOnly: true
+        nanny:
+          type: string
+          readOnly: true
+        shift:
+          type: string
+          readOnly: true
+        depSched:
+          type: string
+          readOnly: true
+        depActual:
+          type: string
+          readOnly: true
+        arrSched:
+          type: string
+          readOnly: true
+        arrActual:
+          type: string
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+        statusLabel:
+          type: string
+          readOnly: true
+      required:
+      - arrActual
+      - arrSched
+      - bus
+      - depActual
+      - depSched
+      - driver
+      - id
+      - nanny
+      - shift
+      - status
+      - statusLabel
     KindEnum:
       enum:
       - supervisor_home
@@ -1831,6 +2196,69 @@ components:
       - inactive
       - total
       - utilization
+    LiveJourney:
+      type: object
+      description: Active journey for the live map/panel.
+      properties:
+        id:
+          type: string
+          format: uuid
+        bus:
+          type: string
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+        headingLabel:
+          type: string
+          readOnly: true
+        destination:
+          type: string
+          readOnly: true
+        occupied:
+          type: integer
+          readOnly: true
+        capacity:
+          type: integer
+          readOnly: true
+        minutes:
+          type: integer
+          readOnly: true
+        kmDone:
+          type: number
+          format: double
+          readOnly: true
+        kmTotal:
+          type: number
+          format: double
+          readOnly: true
+        driver:
+          type: string
+          readOnly: true
+        nanny:
+          type: string
+          readOnly: true
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+      required:
+      - bus
+      - capacity
+      - destination
+      - driver
+      - headingLabel
+      - id
+      - kmDone
+      - kmTotal
+      - latitude
+      - longitude
+      - minutes
+      - nanny
+      - occupied
+      - status
     LocaleEnum:
       enum:
       - en
@@ -1947,6 +2375,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Guardian'
+    PaginatedJourneyLogList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/JourneyLog'
+    PaginatedLiveJourneyList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiveJourney'
     PaginatedRouteList:
       type: object
       required:
@@ -2016,6 +2490,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Supervisor'
+    PaginatedTripDetailList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TripDetail'
     PasswordResetConfirmRequest:
       type: object
       properties:
@@ -2635,6 +3132,111 @@ components:
           minLength: 1
       required:
       - refresh
+    TripDetail:
+      type: object
+      description: Live-journey fields + route timeline for the bus-detail panel.
+      properties:
+        id:
+          type: string
+          format: uuid
+        bus:
+          type: string
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+        headingLabel:
+          type: string
+          readOnly: true
+        destination:
+          type: string
+          readOnly: true
+        occupied:
+          type: integer
+          readOnly: true
+        capacity:
+          type: integer
+          readOnly: true
+        minutes:
+          type: integer
+          readOnly: true
+        kmDone:
+          type: number
+          format: double
+          readOnly: true
+        kmTotal:
+          type: number
+          format: double
+          readOnly: true
+        driver:
+          type: string
+          readOnly: true
+        nanny:
+          type: string
+          readOnly: true
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        fromLabel:
+          type: string
+          readOnly: true
+        to:
+          type: string
+          readOnly: true
+        departure:
+          type: string
+          readOnly: true
+        stops:
+          type: integer
+          readOnly: true
+        arrival:
+          type: string
+          readOnly: true
+        timeline:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+      required:
+      - arrival
+      - bus
+      - capacity
+      - departure
+      - destination
+      - driver
+      - fromLabel
+      - headingLabel
+      - id
+      - kmDone
+      - kmTotal
+      - latitude
+      - longitude
+      - minutes
+      - nanny
+      - occupied
+      - status
+      - stops
+      - timeline
+      - to
+    TripPositionRequest:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        heading:
+          type: number
+          format: double
+      required:
+      - latitude
+      - longitude
     User:
       type: object
       description: Public shape of the current user (used by /me and login response).

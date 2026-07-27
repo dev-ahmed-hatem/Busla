@@ -10,12 +10,8 @@ import { Card } from "@/components/ui/card";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
 import { Sparkline } from "@/components/ui/sparkline";
-import {
-  JOURNEY_LOG_KPIS,
-  JOURNEY_LOGS,
-  type JourneyLog,
-  type JourneyLogKpi,
-} from "@/lib/mock/live-tracking";
+import { useJourneyLogs, useJourneyLogSummary } from "@/lib/api/hooks";
+import { PAGE_SIZE, type JourneyLog, type JourneyLogKpi } from "@/lib/api/resources";
 
 function Kpi({ kpi }: { kpi: JourneyLogKpi }) {
   const t = useTranslations("liveTracking");
@@ -58,7 +54,16 @@ function TimeCell({ sched, actual, alert }: { sched: string; actual: string; ale
 
 export function JourneyLogs() {
   const t = useTranslations("liveTracking");
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
+  const summary = useJourneyLogSummary();
+  const query = { search: search || undefined, page };
+  const { data, isLoading } = useJourneyLogs(query);
+
+  const kpis = summary.data ?? [];
+  const rows = data?.results ?? [];
+  const pageCount = Math.max(1, Math.ceil((data?.count ?? 0) / PAGE_SIZE));
 
   const columns: Column<JourneyLog>[] = [
     { key: "id", header: t("cols.id"), render: (r) => <span className="font-medium text-brand-navy">{r.id}</span> },
@@ -77,11 +82,7 @@ export function JourneyLogs() {
       key: "actions",
       header: t("cols.actions"),
       render: () => (
-        <button
-          type="button"
-          aria-label="View"
-          className="grid h-8 w-8 place-items-center rounded-md text-slate-500 hover:bg-slate-100"
-        >
+        <button type="button" aria-label="View" className="grid h-8 w-8 place-items-center rounded-md text-slate-500 hover:bg-slate-100">
           <Eye className="h-4 w-4" />
         </button>
       ),
@@ -96,13 +97,13 @@ export function JourneyLogs() {
           className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-2 text-sm text-slate-600 hover:bg-slate-100"
         >
           <Calendar className="h-4 w-4" />
-          1 Apr 2026
+          {new Date().toLocaleDateString()}
           <ChevronDown className="h-3.5 w-3.5" />
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {JOURNEY_LOG_KPIS.map((kpi) => (
+        {kpis.map((kpi) => (
           <Kpi key={kpi.key} kpi={kpi} />
         ))}
       </div>
@@ -115,6 +116,8 @@ export function JourneyLogs() {
               <Search className="pointer-events-none absolute inset-y-0 start-3 my-auto h-4 w-4 text-slate-400" />
               <input
                 type="search"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder={t("searchJourneys")}
                 className="h-9 w-56 rounded-md border border-border bg-surface ps-9 pe-3 text-sm outline-none focus:border-brand-navy"
               />
@@ -129,10 +132,15 @@ export function JourneyLogs() {
           </div>
         </div>
 
-        <DataTable columns={columns} rows={JOURNEY_LOGS} rowKey={(r) => r.id} />
+        <DataTable
+          columns={columns}
+          rows={rows}
+          rowKey={(r) => r.id}
+          emptyLabel={isLoading ? "Loading…" : "No journey logs"}
+        />
 
         <div className="mt-4 flex justify-center border-t border-border pt-4">
-          <Pagination page={page} pageCount={10} onPageChange={setPage} />
+          <Pagination page={page} pageCount={pageCount} onPageChange={setPage} />
         </div>
       </Card>
     </div>

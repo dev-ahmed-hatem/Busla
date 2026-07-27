@@ -15,3 +15,6 @@ DATABASES = {
 }
 
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+
+# Keep the VRP solver snappy in tests (it otherwise runs to the full time limit).
+OPTIMIZER_TIME_LIMIT_SEC = 1

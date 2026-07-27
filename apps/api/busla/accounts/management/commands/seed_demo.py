@@ -12,11 +12,15 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 import random
+from datetime import time, timedelta
+
+from django.utils import timezone
 
 from busla.fleet.models import Bus
 from busla.people.models import Driver, Guardian, Student, Supervisor
 from busla.routing.services import generate_routes
 from busla.tenancy.models import School
+from busla.trips.models import Trip
 
 User = get_user_model()
 
@@ -134,5 +138,34 @@ class Command(BaseCommand):
 
         routes = generate_routes(school, num_buses=len(buses), seats_per_bus=25)
         self.stdout.write(f"Routes generated: {len(routes)}")
+
+        # Trips: one active journey today + a few completed logs (yesterday).
+        route = routes[0] if routes else None
+        if route and not Trip.objects.filter(school=school).exists():
+            driver = Driver.objects.filter(school=school, status="active").first()
+            stops = list(route.stops.all())
+            pos = stops[1] if len(stops) > 1 else (stops[0] if stops else None)
+            today = timezone.localdate()
+            Trip.objects.create(
+                school=school, route=route, bus=route.bus, driver=driver, supervisor=route.supervisor,
+                service_date=today, shift=route.shift, status=Trip.Status.ON_TIME,
+                scheduled_departure=time(6, 0), scheduled_arrival=time(7, 15), actual_departure=time(6, 5),
+                current_stop_index=1,
+                current_lat=(pos.latitude if pos else None), current_lng=(pos.longitude if pos else None),
+                last_ping_at=timezone.now(),
+            )
+            y = today - timedelta(days=1)
+            for st, delay, dep_a, arr_a in [
+                (Trip.Status.ON_TIME, 0, time(6, 0), time(7, 30)),
+                (Trip.Status.DELAYED, 8, time(6, 5), time(7, 38)),
+                (Trip.Status.BROKEN_DOWN, 0, time(6, 10), time(6, 45)),
+            ]:
+                Trip.objects.create(
+                    school=school, route=route, bus=route.bus, driver=driver, supervisor=route.supervisor,
+                    service_date=y, shift="morning", status=st, delay_minutes=delay,
+                    scheduled_departure=time(6, 0), scheduled_arrival=time(7, 30),
+                    actual_departure=dep_a, actual_arrival=arr_a,
+                )
+            self.stdout.write("Trips: 1 active + 3 logs")
 
         self.stdout.write(self.style.SUCCESS(f"\nDone. Password for all demo users: {DEMO_PASSWORD}"))

@@ -75,6 +75,101 @@ export interface Supervisor {
   status: string;
 }
 
+export type JourneyStatus = "On-time" | "Delayed" | "Broken down" | "Off-route";
+
+/** Maps a live status to its `liveTracking.status.*` i18n key. */
+export const JOURNEY_STATUS_KEY: Record<string, string> = {
+  "On-time": "onTime",
+  Delayed: "delayed",
+  "Broken down": "brokenDown",
+  "Off-route": "offRoute",
+};
+
+export interface Journey {
+  id: string;
+  bus: string;
+  status: string;
+  headingLabel: string;
+  destination: string;
+  occupied: number;
+  capacity: number;
+  minutes: number;
+  kmDone: number;
+  kmTotal: number;
+  driver: string;
+  nanny: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+export interface TimelineStop {
+  status: "completed" | "current" | "upcoming";
+  title: string;
+  address: string;
+  time: string;
+}
+
+export interface TripDetail extends Journey {
+  from: string;
+  to: string;
+  departure: string;
+  stops: number;
+  arrival: string;
+  timeline: TimelineStop[];
+}
+
+export interface JourneyLog {
+  id: string;
+  bus: string;
+  driver: string;
+  nanny: string;
+  shift: string;
+  depSched: string;
+  depActual: string;
+  arrSched: string;
+  arrActual: string;
+  status: string;
+  statusLabel: string;
+}
+
+export interface JourneyLogKpi {
+  key: string;
+  title: string;
+  value: number;
+  sub: string;
+  tone: "onTime" | "delayed" | "issue";
+  spark: number[];
+}
+
+export interface TripSegment {
+  key: string;
+  label: string;
+  value: number;
+  percent: number;
+  tone: "onTime" | "info" | "delayed" | "issue";
+}
+
+export interface ActionItem {
+  id: string;
+  kind: "breakdown" | "off_route" | "absent" | "request";
+  title: string;
+  subtitle: string;
+  minsAgo: number;
+}
+
+export interface LiveMapPin {
+  bus: string;
+  status: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+export interface TripOverview {
+  trip_segments: TripSegment[];
+  action_required: ActionItem[];
+  map_pins: LiveMapPin[];
+}
+
 export interface RouteStop {
   id: string;
   sequence: number;

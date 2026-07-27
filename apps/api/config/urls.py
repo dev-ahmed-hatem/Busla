@@ -18,6 +18,7 @@ api_v1 = [
     path("", include("busla.people.urls")),                 # Phase 2
     path("", include("busla.dashboard.urls")),              # Phase 2 — aggregate stats
     path("", include("busla.routing.urls")),                # Phase 3 — route planning
+    path("", include("busla.trips.urls")),                  # Phase 4 — trips / live tracking
     # path("", include("busla.trips.urls")),                # Phase 4
     # path("", include("busla.notifications.urls")),        # Phase 5
     # path("", include("busla.requests.urls")),             # Phase 5

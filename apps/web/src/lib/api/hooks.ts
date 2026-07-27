@@ -11,12 +11,61 @@ import {
   apiList,
   apiPatch,
   type DashboardStats,
+  type Journey,
+  type JourneyLog,
+  type JourneyLogKpi,
   type OptimizeParams,
   type Paginated,
   type QueryParams,
   type Route,
   type RouteReadiness,
+  type TripDetail,
+  type TripOverview,
 } from "./resources";
+
+/** Active journeys, polled every 7s for a live feel (no WebSockets). */
+export function useLiveJourneys() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<Journey[]>({
+    queryKey: ["trips", "live"],
+    queryFn: () => apiGet<Journey[]>("/api/v1/trips/live/"),
+    enabled: !!token,
+    refetchInterval: 7000,
+  });
+}
+
+export function useTrip(id: string | null) {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<TripDetail>({
+    queryKey: ["trips", id],
+    queryFn: () => apiGet<TripDetail>(`/api/v1/trips/${id}/`),
+    enabled: !!token && !!id,
+  });
+}
+
+export function useJourneyLogs(params: QueryParams = {}) {
+  return useList<JourneyLog>(["trip-logs", params], "/api/v1/trips/logs/", params);
+}
+
+export function useJourneyLogSummary() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<JourneyLogKpi[]>({
+    queryKey: ["trip-logs", "summary"],
+    queryFn: () => apiGet<JourneyLogKpi[]>("/api/v1/trips/logs-summary/"),
+    enabled: !!token,
+  });
+}
+
+/** Dashboard trip widgets (donut / action-required / map pins), polled for liveness. */
+export function useTripOverview() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<TripOverview>({
+    queryKey: ["trips", "overview"],
+    queryFn: () => apiGet<TripOverview>("/api/v1/trips/overview/"),
+    enabled: !!token,
+    refetchInterval: 7000,
+  });
+}
 
 /** Route Planning readiness (student/route counts for the empty state). */
 export function useRouteReadiness() {

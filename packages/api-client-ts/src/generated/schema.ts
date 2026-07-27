@@ -420,6 +420,143 @@ export interface paths {
         patch: operations["v1_supervisors_partial_update"];
         trace?: never;
     };
+    "/api/v1/trips/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+         *     direct POST, so this is read-only with explicit POST actions.
+         */
+        get: operations["v1_trips_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+         *     direct POST, so this is read-only with explicit POST actions.
+         */
+        get: operations["v1_trips_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{id}/position/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+         *     direct POST, so this is read-only with explicit POST actions.
+         */
+        post: operations["v1_trips_position_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/live/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+         *     direct POST, so this is read-only with explicit POST actions.
+         */
+        get: operations["v1_trips_live_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/logs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+         *     direct POST, so this is read-only with explicit POST actions.
+         */
+        get: operations["v1_trips_logs_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/logs-summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Read + lifecycle actions for trips. Trips are created by optimize/generate, not
+         *     direct POST, so this is read-only with explicit POST actions.
+         */
+        get: operations["v1_trips_logs_summary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/overview/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Dashboard trip widgets: status donut, action-required, live map pins (today). */
+        get: operations["v1_trips_overview_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -557,6 +694,20 @@ export interface components {
          * @enum {string}
          */
         HealthStatusEnum: "ok" | "degraded";
+        /** @description Historical (finished) trip row for the Journey Logs table. */
+        JourneyLog: {
+            readonly id: string;
+            readonly bus: string;
+            readonly driver: string;
+            readonly nanny: string;
+            readonly shift: string;
+            readonly depSched: string;
+            readonly depActual: string;
+            readonly arrSched: string;
+            readonly arrActual: string;
+            readonly status: string;
+            readonly statusLabel: string;
+        };
         /**
          * @description * `supervisor_home` - Supervisor home
          *     * `student` - Student
@@ -570,6 +721,28 @@ export interface components {
             inactive: number;
             /** Format: double */
             utilization: number;
+        };
+        /** @description Active journey for the live map/panel. */
+        LiveJourney: {
+            /** Format: uuid */
+            id: string;
+            readonly bus: string;
+            readonly status: string;
+            readonly headingLabel: string;
+            readonly destination: string;
+            readonly occupied: number;
+            readonly capacity: number;
+            readonly minutes: number;
+            /** Format: double */
+            readonly kmDone: number;
+            /** Format: double */
+            readonly kmTotal: number;
+            readonly driver: string;
+            readonly nanny: string;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
         };
         /**
          * @description * `en` - en
@@ -637,6 +810,36 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Guardian"][];
         };
+        PaginatedJourneyLogList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["JourneyLog"][];
+        };
+        PaginatedLiveJourneyList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["LiveJourney"][];
+        };
         PaginatedRouteList: {
             /** @example 123 */
             count: number;
@@ -681,6 +884,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Supervisor"][];
+        };
+        PaginatedTripDetailList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["TripDetail"][];
         };
         PasswordResetConfirmRequest: {
             uid: string;
@@ -929,6 +1147,44 @@ export interface components {
         };
         TokenRefreshRequest: {
             refresh: string;
+        };
+        /** @description Live-journey fields + route timeline for the bus-detail panel. */
+        TripDetail: {
+            /** Format: uuid */
+            id: string;
+            readonly bus: string;
+            readonly status: string;
+            readonly headingLabel: string;
+            readonly destination: string;
+            readonly occupied: number;
+            readonly capacity: number;
+            readonly minutes: number;
+            /** Format: double */
+            readonly kmDone: number;
+            /** Format: double */
+            readonly kmTotal: number;
+            readonly driver: string;
+            readonly nanny: string;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+            readonly fromLabel: string;
+            readonly to: string;
+            readonly departure: string;
+            readonly stops: number;
+            readonly arrival: string;
+            readonly timeline: {
+                [key: string]: unknown;
+            }[];
+        };
+        TripPositionRequest: {
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+            /** Format: double */
+            heading?: number;
         };
         /** @description Public shape of the current user (used by /me and login response). */
         User: {
@@ -2188,6 +2444,222 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Supervisor"];
                 };
+            };
+        };
+    };
+    v1_trips_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+                service_date?: string;
+                /**
+                 * @description * `morning` - Morning
+                 *     * `afternoon` - Afternoon
+                 */
+                shift?: "afternoon" | "morning";
+                /**
+                 * @description * `scheduled` - Scheduled
+                 *     * `on_time` - On-time
+                 *     * `delayed` - Delayed
+                 *     * `off_route` - Off-route
+                 *     * `broken_down` - Broken down
+                 *     * `completed` - Completed
+                 */
+                status?: "broken_down" | "completed" | "delayed" | "off_route" | "on_time" | "scheduled";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedTripDetailList"];
+                };
+            };
+        };
+    };
+    v1_trips_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this trip. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripDetail"];
+                };
+            };
+        };
+    };
+    v1_trips_position_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A UUID string identifying this trip. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripPositionRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TripPositionRequest"];
+                "multipart/form-data": components["schemas"]["TripPositionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveJourney"];
+                };
+            };
+        };
+    };
+    v1_trips_live_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+                service_date?: string;
+                /**
+                 * @description * `morning` - Morning
+                 *     * `afternoon` - Afternoon
+                 */
+                shift?: "afternoon" | "morning";
+                /**
+                 * @description * `scheduled` - Scheduled
+                 *     * `on_time` - On-time
+                 *     * `delayed` - Delayed
+                 *     * `off_route` - Off-route
+                 *     * `broken_down` - Broken down
+                 *     * `completed` - Completed
+                 */
+                status?: "broken_down" | "completed" | "delayed" | "off_route" | "on_time" | "scheduled";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedLiveJourneyList"];
+                };
+            };
+        };
+    };
+    v1_trips_logs_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+                service_date?: string;
+                /**
+                 * @description * `morning` - Morning
+                 *     * `afternoon` - Afternoon
+                 */
+                shift?: "afternoon" | "morning";
+                /**
+                 * @description * `scheduled` - Scheduled
+                 *     * `on_time` - On-time
+                 *     * `delayed` - Delayed
+                 *     * `off_route` - Off-route
+                 *     * `broken_down` - Broken down
+                 *     * `completed` - Completed
+                 */
+                status?: "broken_down" | "completed" | "delayed" | "off_route" | "on_time" | "scheduled";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedJourneyLogList"];
+                };
+            };
+        };
+    };
+    v1_trips_logs_summary_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripDetail"];
+                };
+            };
+        };
+    };
+    v1_trips_overview_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -3,7 +3,7 @@ import { Bus, Clock, MapPin, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Avatar } from "@/components/ui/avatar";
-import { STATUS_KEY, type Journey } from "@/lib/mock/live-tracking";
+import { JOURNEY_STATUS_KEY, type Journey } from "@/lib/api/resources";
 import { cn } from "@/lib/utils/cn";
 
 export function JourneyCard({
@@ -37,7 +37,7 @@ export function JourneyCard({
         </span>
         <StatusPill
           status={journey.status}
-          label={t(`status.${STATUS_KEY[journey.status]}`)}
+          label={t(`status.${JOURNEY_STATUS_KEY[journey.status] ?? "onTime"}`)}
         />
       </div>
 

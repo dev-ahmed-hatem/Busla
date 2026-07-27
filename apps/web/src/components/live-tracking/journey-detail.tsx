@@ -1,10 +1,15 @@
+"use client";
+
 import { StatusPill, TONE_VAR, type StatusTone } from "@busla/ui";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { JOURNEY_DETAIL, type Journey, type StopStatus, type TimelineStop } from "@/lib/mock/live-tracking";
+import { useTrip } from "@/lib/api/hooks";
+import type { Journey, TimelineStop } from "@/lib/api/resources";
 
 import { JourneyCard } from "./journey-card";
+
+type StopStatus = TimelineStop["status"];
 
 const STOP_TONE: Record<StopStatus, StatusTone> = {
   completed: "onTime",
@@ -45,7 +50,8 @@ function Timeline({ stops }: { stops: TimelineStop[] }) {
 
 export function JourneyDetail({ journey, onBack }: { journey: Journey; onBack: () => void }) {
   const t = useTranslations("liveTracking");
-  const d = JOURNEY_DETAIL;
+  const { data: d } = useTrip(journey.id);
+
   return (
     <div className="flex h-full flex-col overflow-auto">
       <button
@@ -59,35 +65,39 @@ export function JourneyDetail({ journey, onBack }: { journey: Journey; onBack: (
 
       <JourneyCard journey={journey} />
 
-      <div className="mt-4 rounded-lg border border-border p-3">
-        <div className="flex items-center justify-between text-sm text-slate-600">
-          <span>
-            {t("from")} <span className="font-medium text-brand-navy">{d.from}</span>
-          </span>
-          <span>
-            {t("to")} <span className="font-medium text-brand-navy">{d.to}</span>
-          </span>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border pt-3 text-center text-xs">
-          <div>
-            <div className="text-slate-400">{t("departureTime")}</div>
-            <div className="font-medium text-brand-navy">{d.departure}</div>
+      {d && (
+        <>
+          <div className="mt-4 rounded-lg border border-border p-3">
+            <div className="flex items-center justify-between text-sm text-slate-600">
+              <span>
+                {t("from")} <span className="font-medium text-brand-navy">{d.from}</span>
+              </span>
+              <span>
+                {t("to")} <span className="font-medium text-brand-navy">{d.to}</span>
+              </span>
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border pt-3 text-center text-xs">
+              <div>
+                <div className="text-slate-400">{t("departureTime")}</div>
+                <div className="font-medium text-brand-navy">{d.departure}</div>
+              </div>
+              <div>
+                <div className="text-slate-400">{t("stops")}</div>
+                <div className="font-medium text-brand-navy">{d.stops}</div>
+              </div>
+              <div>
+                <div className="text-slate-400">{t("estimatedArrival")}</div>
+                <div className="font-medium text-brand-navy">{d.arrival}</div>
+              </div>
+            </div>
           </div>
-          <div>
-            <div className="text-slate-400">{t("stops")}</div>
-            <div className="font-medium text-brand-navy">{d.stops}</div>
-          </div>
-          <div>
-            <div className="text-slate-400">{t("estimatedArrival")}</div>
-            <div className="font-medium text-brand-navy">{d.arrival}</div>
-          </div>
-        </div>
-      </div>
 
-      <div className="mt-4">
-        <h4 className="mb-3 text-sm font-semibold text-brand-navy">{t("routeTimeline")}</h4>
-        <Timeline stops={d.timeline} />
-      </div>
+          <div className="mt-4">
+            <h4 className="mb-3 text-sm font-semibold text-brand-navy">{t("routeTimeline")}</h4>
+            <Timeline stops={d.timeline} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

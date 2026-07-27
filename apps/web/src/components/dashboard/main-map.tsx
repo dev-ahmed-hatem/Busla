@@ -1,23 +1,38 @@
-import { TONE_VAR, type StatusTone } from "@busla/ui";
+"use client";
+
+import { TONE_VAR, toneFor } from "@busla/ui";
 import { Maximize2, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Card, CardHeader } from "@/components/ui/card";
+import { useTripOverview } from "@/lib/api/hooks";
+import type { LiveMapPin } from "@/lib/api/resources";
 
-/**
- * Placeholder for the live fleet map (Screenshot 364). Real Google Maps lands with the
- * tracking module; for now it renders a static map-like panel with a few status pins.
- */
-const PINS: { top: string; left: string; tone: StatusTone }[] = [
-  { top: "22%", left: "18%", tone: "onTime" },
-  { top: "40%", left: "55%", tone: "issue" },
-  { top: "58%", left: "30%", tone: "onTime" },
-  { top: "66%", left: "72%", tone: "delayed" },
-  { top: "78%", left: "20%", tone: "onTime" },
-];
+/** Live fleet map (Screenshot 364). Real Google Maps tiles land later; for now the bus
+ * pins are placed by normalizing their lat/lng into this placeholder panel. */
+function toPins(mapPins: LiveMapPin[]) {
+  const pts = mapPins.filter(
+    (p): p is LiveMapPin & { latitude: number; longitude: number } =>
+      p.latitude != null && p.longitude != null,
+  );
+  if (pts.length === 0) return [];
+  const lats = pts.map((p) => p.latitude);
+  const lngs = pts.map((p) => p.longitude);
+  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
+  const frac = (v: number, min: number, max: number) => (max === min ? 0.5 : (v - min) / (max - min));
+  return pts.map((p, i) => ({
+    key: `${p.bus}-${i}`,
+    tone: toneFor(p.status),
+    left: `${12 + frac(p.longitude, minLng, maxLng) * 76}%`,
+    top: `${12 + (1 - frac(p.latitude, minLat, maxLat)) * 76}%`,
+  }));
+}
 
 export function MainMap() {
   const t = useTranslations("dashboard");
+  const { data } = useTripOverview();
+  const pins = toPins(data?.map_pins ?? []);
 
   return (
     <Card>
@@ -35,13 +50,9 @@ export function MainMap() {
       />
       <div
         className="relative h-72 w-full overflow-hidden rounded-md border border-border"
-        style={{
-          background:
-            "linear-gradient(135deg, #eef2f7 0%, #e7edf3 40%, #edf1f6 100%)",
-        }}
+        style={{ background: "linear-gradient(135deg, #eef2f7 0%, #e7edf3 40%, #edf1f6 100%)" }}
         aria-label={t("mainMap")}
       >
-        {/* faux street grid */}
         <div
           className="absolute inset-0 opacity-60"
           style={{
@@ -50,9 +61,9 @@ export function MainMap() {
             backgroundSize: "48px 48px",
           }}
         />
-        {PINS.map((pin, i) => (
+        {pins.map((pin) => (
           <MapPin
-            key={i}
+            key={pin.key}
             className="absolute h-7 w-7 -translate-x-1/2 -translate-y-full drop-shadow"
             style={{ top: pin.top, left: pin.left, color: TONE_VAR[pin.tone], fill: TONE_VAR[pin.tone] }}
           />

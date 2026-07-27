@@ -2,7 +2,7 @@ import { Bus, GraduationCap, UserCog, UserRound, type LucideIcon } from "lucide-
 import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/card";
-import type { KpiCard as KpiData } from "@/lib/mock/dashboard";
+import type { KpiCardData as KpiData } from "@/lib/api/resources";
 import { cn } from "@/lib/utils/cn";
 
 const ICONS: Record<string, LucideIcon> = {

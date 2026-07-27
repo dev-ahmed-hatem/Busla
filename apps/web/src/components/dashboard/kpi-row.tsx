@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboardStats } from "@/lib/api/hooks";
-import type { KpiCard as KpiData, KpiKey } from "@/lib/mock/dashboard";
+import type { KpiCardData as KpiData, KpiKey } from "@/lib/api/resources";
 
 import { KpiCard } from "./kpi-card";
 

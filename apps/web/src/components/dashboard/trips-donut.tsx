@@ -1,34 +1,29 @@
 "use client";
 
 import { TONE_VAR } from "@busla/ui";
-import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Card, CardHeader } from "@/components/ui/card";
 import { Donut } from "@/components/ui/donut";
 import { useTripOverview } from "@/lib/api/hooks";
+import type { Period } from "@/lib/api/resources";
 
-function TodayDropdown({ label }: { label: string }) {
-  return (
-    <button
-      type="button"
-      className="flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs text-slate-600"
-    >
-      {label}
-      <ChevronDown className="h-3.5 w-3.5" />
-    </button>
-  );
-}
+import { PeriodDropdown } from "./period-dropdown";
 
 export function TripsDonut() {
   const t = useTranslations("dashboard");
-  const { data } = useTripOverview();
+  const [period, setPeriod] = useState<Period>("today");
+  const { data } = useTripOverview(period);
   const segments = data?.trip_segments ?? [];
   const total = segments.reduce((sum, s) => sum + s.value, 0);
 
   return (
     <Card>
-      <CardHeader title={t("tripsStatus")} action={<TodayDropdown label={t("today")} />} />
+      <CardHeader
+        title={t("tripsStatus")}
+        action={<PeriodDropdown value={period} onChange={setPeriod} />}
+      />
       <div className="flex items-center justify-around gap-4">
         <Donut
           segments={segments.map((s) => ({ value: s.value, color: TONE_VAR[s.tone] }))}

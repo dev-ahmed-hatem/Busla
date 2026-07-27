@@ -16,6 +16,7 @@ import {
   type JourneyLogKpi,
   type OptimizeParams,
   type Paginated,
+  type Period,
   type ParentRequestDetail,
   type ParentRequestItem,
   type QueryParams,
@@ -62,12 +63,13 @@ export function useJourneyLogSummary() {
   });
 }
 
-/** Dashboard trip widgets (donut / action-required / map pins), polled for liveness. */
-export function useTripOverview() {
+/** Dashboard trip widgets (donut / action-required / map pins), polled for liveness.
+ * `period` scopes the status donut (map + actions always reflect today). */
+export function useTripOverview(period: Period = "today") {
   const token = useSession((s) => s.accessToken);
   return useQuery<TripOverview>({
-    queryKey: ["trips", "overview"],
-    queryFn: () => apiGet<TripOverview>("/api/v1/trips/overview/"),
+    queryKey: ["trips", "overview", period],
+    queryFn: () => apiGet<TripOverview>(`/api/v1/trips/overview/?period=${period}`),
     enabled: !!token,
     refetchInterval: 7000,
   });

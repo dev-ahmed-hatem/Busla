@@ -49,9 +49,11 @@
     "actionRequired": "Action Required",
     "viewAll": "View All",
     "minAgo": "{mins} min ago",
-    "tripsStatus": "Trips Status Today",
+    "tripsStatus": "Trips Status",
     "totalTrips": "Total Trips",
     "today": "Today",
+    "period": { "today": "Today", "thisWeek": "This week", "thisMonth": "This month" },
+    "schoolMarker": "School location",
     "busCapacity": "Bus Capacity Overview",
     "col": {
       "busNo": "Bus No.",

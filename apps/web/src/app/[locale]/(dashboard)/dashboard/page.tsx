@@ -5,8 +5,9 @@ import { MainMap } from "@/components/dashboard/main-map";
 import { TripsDonut } from "@/components/dashboard/trips-donut";
 
 /**
- * Operations overview (design Screenshot 364). KPI cards + bus capacity are live
- * (dashboard/stats); the map, action list, and trips donut await Phase-4 trip data.
+ * Operations overview (design Screenshot 364). All widgets are live: KPI cards + bus
+ * capacity from dashboard/stats; the map, action list, and trips donut from trips/overview
+ * (polled every 7s). The map is a placeholder panel until real Google Maps tiles land.
  */
 export default function DashboardPage() {
   return (

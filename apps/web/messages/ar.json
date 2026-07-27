@@ -49,9 +49,11 @@
     "actionRequired": "إجراءات مطلوبة",
     "viewAll": "عرض الكل",
     "minAgo": "منذ {mins} دقيقة",
-    "tripsStatus": "حالة الرحلات اليوم",
+    "tripsStatus": "حالة الرحلات",
     "totalTrips": "إجمالي الرحلات",
     "today": "اليوم",
+    "period": { "today": "اليوم", "thisWeek": "هذا الأسبوع", "thisMonth": "هذا الشهر" },
+    "schoolMarker": "موقع المدرسة",
     "busCapacity": "نظرة عامة على سعة الحافلات",
     "col": {
       "busNo": "رقم الحافلة",

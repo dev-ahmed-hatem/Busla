@@ -151,7 +151,7 @@ export interface TripSegment {
 
 export interface ActionItem {
   id: string;
-  kind: "breakdown" | "off_route" | "absent" | "request";
+  kind: "breakdown" | "off_route" | "delayed" | "absent" | "request";
   title: string;
   subtitle: string;
   minsAgo: number;
@@ -168,7 +168,11 @@ export interface TripOverview {
   trip_segments: TripSegment[];
   action_required: ActionItem[];
   map_pins: LiveMapPin[];
+  school: { latitude: number | null; longitude: number | null } | null;
 }
+
+/** Period selector for the dashboard trips-status donut. */
+export type Period = "today" | "week" | "month";
 
 export interface RouteStop {
   id: string;
@@ -236,6 +240,24 @@ export interface DashboardStats {
   supervisors: Kpi;
   students: Kpi;
   bus_capacity: CapacityRow[];
+}
+
+// KPI-card presentational types (the API returns raw Kpi counts; the dashboard
+// KpiRow maps them into these labelled cards).
+export type KpiKey = "buses" | "drivers" | "supervisors" | "students";
+
+export interface KpiSubMetric {
+  label: string;
+  value: number;
+  tone: "good" | "bad";
+}
+
+export interface KpiCardData {
+  key: KpiKey;
+  total: number;
+  subs: KpiSubMetric[];
+  /** Utilisation/health percentage shown on the mini bar. */
+  percent: number;
 }
 
 // --- Notifications (Phase 5) ---

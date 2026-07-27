@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import timedelta
+
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
@@ -10,6 +12,7 @@ from rest_framework.views import APIView
 
 from busla.common.permissions import IsAdmin
 from busla.people.models import Driver
+from busla.requests.models import ParentRequest
 from busla.routing.optimizers import haversine_km
 
 from .models import Trip
@@ -109,22 +112,46 @@ class TripViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(LiveJourneySerializer(trip).data)
 
 
+def _period_start(period: str, today):
+    """Inclusive start date for a status-donut period; end is always `today`."""
+    if period == "week":
+        return today - timedelta(days=today.weekday())  # Monday of this week
+    if period == "month":
+        return today.replace(day=1)
+    return today  # default: today only
+
+
 class TripsOverviewView(APIView):
-    """Dashboard trip widgets: status donut, action-required, live map pins (today)."""
+    """Dashboard trip widgets: status donut (period-scoped), action-required + live map
+    pins (always today/now)."""
 
     permission_classes = [IsAdmin]
 
     def get(self, request: Request) -> Response:
         school_id = _scope(request)
         today = timezone.localdate()
-        base = Trip.objects.filter(school_id=school_id, is_deleted=False, service_date=today)
-        active = base.filter(status__in=Trip.ACTIVE_STATUSES, actual_arrival__isnull=True).select_related("route", "bus")
 
-        total = base.count()
-        completed = base.filter(actual_arrival__isnull=False).count()
-        in_progress = base.filter(status=Trip.Status.ON_TIME, actual_arrival__isnull=True).count()
-        delayed = base.filter(status=Trip.Status.DELAYED).count()
-        issues = base.filter(status__in=[Trip.Status.BROKEN_DOWN, Trip.Status.OFF_ROUTE]).count()
+        # Donut segments follow the selected period; map + actions stay "today/now".
+        period = request.query_params.get("period", "today")
+        seg_base = Trip.objects.filter(
+            school_id=school_id, is_deleted=False,
+            service_date__gte=_period_start(period, today), service_date__lte=today,
+        )
+        active = (
+            Trip.objects.filter(
+                school_id=school_id, is_deleted=False, service_date=today,
+                status__in=Trip.ACTIVE_STATUSES, actual_arrival__isnull=True,
+            )
+            .select_related("route", "bus")
+        )
+
+        # Mutually-exclusive partition: completed, then by status among the not-yet-arrived.
+        total = seg_base.count()
+        completed = seg_base.filter(actual_arrival__isnull=False).count()
+        pending = seg_base.filter(actual_arrival__isnull=True)
+        in_progress = pending.filter(status=Trip.Status.ON_TIME).count()
+        delayed = pending.filter(status=Trip.Status.DELAYED).count()
+        issues = pending.filter(status__in=[Trip.Status.BROKEN_DOWN, Trip.Status.OFF_ROUTE]).count()
 
         def seg(key, label, value, tone):
             return {"key": key, "label": label, "value": value, "percent": round(value / total * 100, 1) if total else 0, "tone": tone}
@@ -146,10 +173,27 @@ class TripsOverviewView(APIView):
             elif trip.status == Trip.Status.OFF_ROUTE:
                 actions.append({"id": str(trip.id), "kind": "off_route", "title": f"{bus} – Off Route", "subtitle": "Bus is off the planned route", "minsAgo": mins})
             elif trip.status == Trip.Status.DELAYED:
-                actions.append({"id": str(trip.id), "kind": "absent", "title": f"{bus} – Delayed", "subtitle": f"Delayed by {trip.delay_minutes} minutes", "minsAgo": mins})
+                actions.append({"id": str(trip.id), "kind": "delayed", "title": f"{bus} – Delayed", "subtitle": f"Delayed by {trip.delay_minutes} minutes", "minsAgo": mins})
 
         for driver in Driver.objects.filter(school_id=school_id, is_deleted=False, status="absent")[:3]:
             actions.append({"id": str(driver.id), "kind": "absent", "title": f"Driver {driver.full_name} – Absent", "subtitle": "Not available for today's shift", "minsAgo": 0})
+
+        # Pending parent pickup-change requests (Phase 5) surface as action items too.
+        pending_requests = (
+            ParentRequest.objects.filter(
+                school_id=school_id, is_deleted=False, status=ParentRequest.Status.PENDING
+            )
+            .select_related("student")
+            .order_by("-occurred_at")[:3]
+        )
+        for req in pending_requests:
+            mins = round((now - req.occurred_at).total_seconds() / 60) if req.occurred_at else 0
+            actions.append({
+                "id": str(req.id), "kind": "request",
+                "title": req.student.full_name if req.student_id else "Parent Request",
+                "subtitle": req.reason or "Pickup change requested",
+                "minsAgo": max(0, mins),
+            })
 
         pins = [
             {"bus": t.bus.bus_number if t.bus_id else "Bus", "status": t.get_status_display(), "latitude": t.current_lat, "longitude": t.current_lng}
@@ -157,4 +201,14 @@ class TripsOverviewView(APIView):
             if t.current_lat is not None and t.current_lng is not None
         ]
 
-        return Response({"trip_segments": segments, "action_required": actions, "map_pins": pins})
+        school = getattr(request.user, "school", None)
+        school_pin = (
+            {"latitude": school.latitude, "longitude": school.longitude} if school else None
+        )
+
+        return Response({
+            "trip_segments": segments,
+            "action_required": actions,
+            "map_pins": pins,
+            "school": school_pin,
+        })

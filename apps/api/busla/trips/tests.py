@@ -9,8 +9,10 @@ from rest_framework.test import APIClient
 
 from busla.fleet.models import Bus
 from busla.people.models import Student
+from busla.requests.models import ParentRequest
 from busla.routing.models import Route, RouteStop
 from busla.trips.models import Trip
+from busla.trips.views import _period_start
 
 LIVE = "/api/v1/trips/live/"
 LOGS = "/api/v1/trips/logs/"
@@ -96,6 +98,79 @@ def test_overview_segments_actions_pins(admin_client, school):
     assert issues["value"] >= 1
     assert any(a["kind"] == "breakdown" for a in resp.data["action_required"])
     assert len(resp.data["map_pins"]) >= 1
+
+
+def test_period_start_helper():
+    from datetime import date
+
+    wed = date(2026, 7, 15)  # a Wednesday
+    assert _period_start("today", wed) == wed
+    assert _period_start("week", wed) == date(2026, 7, 13)  # Monday of that week
+    assert _period_start("month", wed) == date(2026, 7, 1)
+    assert _period_start("bogus", wed) == wed  # unknown → today
+
+
+def test_overview_default_is_today_only(admin_client, school):
+    route, bus = make_route(school)
+    make_trip(school, route, bus, actual_arrival=time(7, 30))  # today, completed
+    old = timezone.localdate() - timedelta(days=40)
+    make_trip(school, route, bus, service_date=old, actual_arrival=time(7, 30))  # last month
+
+    total = sum(s["value"] for s in admin_client.get(OVERVIEW).data["trip_segments"])
+    assert total == 1  # the 40-day-old trip is outside the default (today) window
+
+
+def test_overview_segments_are_mutually_exclusive(admin_client, school):
+    route, bus = make_route(school)
+    # A delayed trip that has already arrived must count once (completed), not twice.
+    make_trip(school, route, bus, status=Trip.Status.DELAYED, actual_arrival=time(7, 40))
+
+    segs = {s["key"]: s["value"] for s in admin_client.get(OVERVIEW).data["trip_segments"]}
+    assert segs["completed"] == 1
+    assert segs["delayed"] == 0
+    assert sum(segs.values()) == 1  # no double-count
+
+
+def test_overview_delayed_action_kind_is_distinct(admin_client, school):
+    route, bus = make_route(school)
+    make_trip(school, route, bus, status=Trip.Status.DELAYED, delay_minutes=12)  # active, delayed
+    kinds = [a["kind"] for a in admin_client.get(OVERVIEW).data["action_required"]]
+    assert "delayed" in kinds
+    assert "absent" not in kinds  # delayed trips are no longer mislabelled
+
+
+def test_overview_surfaces_pending_parent_requests(admin_client, school):
+    route, bus = make_route(school)
+    student = Student.objects.create(school=school, full_name="Kid A", area="New Cairo", status="scheduled")
+    ParentRequest.objects.create(
+        school=school, student=student, requested_area="Shorouk", reason="Moving house",
+    )
+    actions = admin_client.get(OVERVIEW).data["action_required"]
+    req = next((a for a in actions if a["kind"] == "request"), None)
+    assert req is not None
+    assert req["title"] == "Kid A"
+
+
+def test_overview_period_widens_window(admin_client, school):
+    route, bus = make_route(school)
+    make_trip(school, route, bus, actual_arrival=time(7, 30))  # today
+    first = timezone.localdate().replace(day=1)
+    make_trip(school, route, bus, service_date=first, actual_arrival=time(7, 30))  # 1st of month
+
+    today_total = sum(s["value"] for s in admin_client.get(OVERVIEW).data["trip_segments"])
+    month_total = sum(
+        s["value"] for s in admin_client.get(f"{OVERVIEW}?period=month").data["trip_segments"]
+    )
+    assert month_total >= today_total
+
+
+def test_overview_includes_school_coords(admin_client, school):
+    school.latitude, school.longitude = 30.0074, 31.4913
+    school.save(update_fields=["latitude", "longitude"])
+    route, bus = make_route(school)
+    make_trip(school, route, bus)
+    data = admin_client.get(OVERVIEW).data
+    assert data["school"] == {"latitude": 30.0074, "longitude": 31.4913}
 
 
 def test_live_is_school_scoped(admin_client, school, other_school):

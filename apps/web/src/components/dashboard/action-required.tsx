@@ -4,6 +4,7 @@ import { TONE_VAR, type StatusTone } from "@busla/ui";
 import {
   AlertTriangle,
   ChevronRight,
+  Clock,
   MapPin,
   MessageSquare,
   UserX,
@@ -12,15 +13,22 @@ import {
 import { useTranslations } from "next-intl";
 
 import { Card, CardHeader } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
 import { useTripOverview } from "@/lib/api/hooks";
 import type { ActionItem } from "@/lib/api/resources";
 
 const KIND_META: Record<ActionItem["kind"], { icon: LucideIcon; tone: StatusTone }> = {
   breakdown: { icon: AlertTriangle, tone: "issue" },
   off_route: { icon: MapPin, tone: "issue" },
+  delayed: { icon: Clock, tone: "delayed" },
   absent: { icon: UserX, tone: "delayed" },
   request: { icon: MessageSquare, tone: "info" },
 };
+
+/** Parent requests live on the Notifications screen; everything else is a live trip. */
+function hrefFor(item: ActionItem): "/notifications" | "/live-tracking" {
+  return item.kind === "request" ? "/notifications" : "/live-tracking";
+}
 
 function Row({ item }: { item: ActionItem }) {
   const t = useTranslations("dashboard");
@@ -28,21 +36,23 @@ function Row({ item }: { item: ActionItem }) {
   const color = TONE_VAR[tone];
 
   return (
-    <li className="flex items-center gap-3 border-b border-border py-3 last:border-0">
-      <span
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
-        style={{ background: `color-mix(in srgb, ${color} 14%, transparent)`, color }}
-      >
-        <Icon className="h-4 w-4" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold text-brand-navy">{item.title}</div>
-        <div className="truncate text-xs text-slate-500">{item.subtitle}</div>
-      </div>
-      <span className="whitespace-nowrap text-xs text-slate-400">
-        {t("minAgo", { mins: item.minsAgo })}
-      </span>
-      <ChevronRight className="h-4 w-4 shrink-0 text-slate-300 rtl:rotate-180" />
+    <li className="border-b border-border last:border-0">
+      <Link href={hrefFor(item)} className="flex items-center gap-3 py-3 hover:opacity-80">
+        <span
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
+          style={{ background: `color-mix(in srgb, ${color} 14%, transparent)`, color }}
+        >
+          <Icon className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-semibold text-brand-navy">{item.title}</div>
+          <div className="truncate text-xs text-slate-500">{item.subtitle}</div>
+        </div>
+        <span className="whitespace-nowrap text-xs text-slate-400">
+          {t("minAgo", { mins: item.minsAgo })}
+        </span>
+        <ChevronRight className="h-4 w-4 shrink-0 text-slate-300 rtl:rotate-180" />
+      </Link>
     </li>
   );
 }
@@ -58,9 +68,9 @@ export function ActionRequired() {
         title={t("actionRequired")}
         count={items.length}
         action={
-          <button type="button" className="text-sm font-medium text-status-info">
+          <Link href="/live-tracking" className="text-sm font-medium text-status-info hover:underline">
             {t("viewAll")}
-          </button>
+          </Link>
         }
       />
       {items.length === 0 ? (

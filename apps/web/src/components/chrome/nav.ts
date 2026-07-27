@@ -5,14 +5,12 @@ export interface NavItem {
   key: string;
   href: string;
   icon: LucideIcon;
-  /** Optional red count badge (e.g. live-tracking alerts). */
-  badge?: number;
 }
 
 /** Primary sidebar navigation, in design order. */
 export const NAV_ITEMS: NavItem[] = [
   { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { key: "liveTracking", href: "/live-tracking", icon: MapPin, badge: 10 },
+  { key: "liveTracking", href: "/live-tracking", icon: MapPin },
   { key: "routePlanning", href: "/route-planning", icon: Route },
   { key: "users", href: "/users", icon: Users },
   { key: "buses", href: "/buses", icon: Bus },

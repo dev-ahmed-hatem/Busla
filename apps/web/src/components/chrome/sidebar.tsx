@@ -4,6 +4,7 @@ import { LogOut, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { useTripOverview } from "@/lib/api/hooks";
 import { useAuth } from "@/lib/auth/use-auth";
 import { cn } from "@/lib/utils/cn";
 
@@ -19,6 +20,11 @@ export function Sidebar({ open = false, onClose }: { open?: boolean; onClose?: (
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuth();
+
+  // Live-tracking badge = today's operational alerts (breakdowns / off-route / delays / absences).
+  const { data: overview } = useTripOverview();
+  const alertCount = overview?.action_required.filter((a) => a.kind !== "request").length ?? 0;
+  const badgeFor = (key: string) => (key === "liveTracking" && alertCount > 0 ? alertCount : undefined);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
@@ -50,6 +56,7 @@ export function Sidebar({ open = false, onClose }: { open?: boolean; onClose?: (
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
+            const badge = badgeFor(item.key);
             return (
               <Link
                 key={item.key}
@@ -60,9 +67,9 @@ export function Sidebar({ open = false, onClose }: { open?: boolean; onClose?: (
               >
                 <Icon className="h-5 w-5 shrink-0" />
                 <span className="flex-1">{t(item.key)}</span>
-                {item.badge ? (
+                {badge ? (
                   <span className="grid h-5 min-w-5 place-items-center rounded-full bg-status-issue px-1.5 text-xs font-semibold text-white">
-                    {item.badge}
+                    {badge}
                   </span>
                 ) : null}
               </Link>

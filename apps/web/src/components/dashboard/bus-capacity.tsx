@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -28,13 +28,11 @@ export function BusCapacity() {
       <CardHeader
         title={t("busCapacity")}
         action={
-          <button
-            type="button"
-            className="flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs text-slate-600"
-          >
+          // Occupancy is a live assignment snapshot (no time axis) — static scope label, not a filter.
+          <span className="flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs text-slate-500">
+            <Calendar className="h-3.5 w-3.5" />
             {t("today")}
-            <ChevronDown className="h-3.5 w-3.5" />
-          </button>
+          </span>
         }
       />
       <div className="overflow-x-auto">

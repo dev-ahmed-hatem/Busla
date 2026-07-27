@@ -3,6 +3,7 @@
 import { StatusPill } from "@busla/ui";
 import { Bus, Download, Eye, Filter, Plus, Search, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
@@ -33,9 +34,11 @@ interface PersonRow {
 
 export function UsersView() {
   const t = useTranslations("users");
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState<UserTab>("students");
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [search, setSearch] = useState("");
+  // Seed from a `?q=` handoff (e.g. the header search box lands here).
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
   const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);

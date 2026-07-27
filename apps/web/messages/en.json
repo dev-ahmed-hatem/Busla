@@ -158,6 +158,9 @@
         "requests": "Requests"
       },
       "personal": { "dob": "Date of Birth", "grade": "Grade", "class": "Class", "address": "Address" },
+      "route": "Route",
+      "area": "Area",
+      "noGuardians": "No guardians on file for this student",
       "primaryContact": "Primary Contact",
       "new": "New",
       "driver": "Driver",

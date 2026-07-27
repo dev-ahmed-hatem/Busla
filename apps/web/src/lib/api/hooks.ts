@@ -23,6 +23,7 @@ import {
   type Route,
   type RouteReadiness,
   type ShiftBoard,
+  type Student,
   type Substitute,
   type TripDetail,
   type TripNotif,
@@ -38,6 +39,16 @@ export function useLiveJourneys() {
     queryFn: () => apiGet<Journey[]>("/api/v1/trips/live/"),
     enabled: !!token,
     refetchInterval: 7000,
+  });
+}
+
+/** Single student detail (Users → student profile modal). */
+export function useStudent(id: string | null) {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<Student>({
+    queryKey: ["students", id],
+    queryFn: () => apiGet<Student>(`/api/v1/students/${id}/`),
+    enabled: !!token && !!id,
   });
 }
 

@@ -45,6 +45,8 @@ export interface Student {
   phone: string;
   bus: string | null;
   bus_number: string | null;
+  route: string | null;
+  route_name: string | null;
   status: string;
   guardians: Guardian[];
 }

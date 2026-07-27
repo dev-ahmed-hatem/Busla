@@ -38,7 +38,7 @@ export function UsersView() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileId, setProfileId] = useState<string | null>(null);
 
   const path = `/api/v1/${tab}/`;
   const key = ["users", tab];
@@ -91,7 +91,7 @@ export function UsersView() {
       <div className="flex items-center gap-1">
         <button
           type="button"
-          onClick={() => tab === "students" && setProfileOpen(true)}
+          onClick={() => tab === "students" && setProfileId(r.id)}
           aria-label={t("cols.actions")}
           className="grid h-8 w-8 place-items-center rounded-md text-slate-500 hover:bg-slate-100"
         >
@@ -202,7 +202,7 @@ export function UsersView() {
           setAddOpen(false);
         }}
       />
-      <StudentProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+      <StudentProfileModal studentId={profileId} onClose={() => setProfileId(null)} />
     </div>
   );
 }

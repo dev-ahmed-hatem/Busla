@@ -159,6 +159,7 @@
     },
     "profile": {
       "studentId": "Student ID",
+      "changePhoto": "Change photo",
       "edit": "Edit",
       "printReport": "Print Report",
       "tabs": {

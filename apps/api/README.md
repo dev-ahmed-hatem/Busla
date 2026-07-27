@@ -63,6 +63,33 @@ Role logins (all password **`busla1234`**):
 | `nanny@busla.dev` | Supervisor |
 | `parent@busla.dev` | Parent |
 
+## Media uploads (photos)
+
+`Student`, `Driver`, `Supervisor`, and `Bus` each have a `photo` image field (plus
+`School.logo`). Upload via multipart to the resource, e.g.:
+
+```bash
+curl -X PATCH /api/v1/students/<id>/ -H "Authorization: Bearer <token>" -F "photo=@avatar.png"
+```
+
+The serializer returns `photo` as an **absolute URL**. Files are written to
+`MEDIA_ROOT` (`apps/api/mediafiles/`, gitignored). Locally, `runserver` serves them at
+`/media/...` (only when `DEBUG=True`).
+
+### Serving media on PythonAnywhere
+
+PA (production) does **not** serve media through Django/WSGI — configure it in the **Web** tab:
+
+1. **Static files** mapping → add:
+   - URL: `/media/`
+   - Directory: absolute `MEDIA_ROOT`, e.g. `/home/<you>/busla/apps/api/mediafiles`
+2. Ensure **Pillow** is installed in the virtualenv (`pip install -r requirements.txt` includes it).
+3. Make sure the `mediafiles/` directory exists and is writable (Django creates sub-folders on upload).
+4. Prefer a prod settings module (`DEBUG=False`, real `ALLOWED_HOSTS`); the `/media/` mapping
+   above works regardless of `DEBUG` because PA's web server serves it, not Django.
+
+Then reload the web app — uploaded photos are reachable at `https://<you>.pythonanywhere.com/media/...`.
+
 ### Deploying demo data on PythonAnywhere
 
 In the PA bash console, from `apps/api` with the virtualenv active:

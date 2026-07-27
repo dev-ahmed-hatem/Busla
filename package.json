@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "BUSLA — school-bus fleet operations & real-time tracking platform (monorepo root)",
+  "packageManager": "npm@10.9.2",
   "workspaces": [
     "apps/web",
     "packages/*"

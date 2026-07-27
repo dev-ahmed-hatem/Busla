@@ -10,6 +10,7 @@ import {
   apiGet,
   apiList,
   apiPatch,
+  apiUpload,
   type DashboardStats,
   type Journey,
   type JourneyLog,
@@ -242,5 +243,18 @@ export function useDelete(invalidateKey: unknown[]) {
   return useMutation({
     mutationFn: (path: string) => apiDelete(path),
     onSuccess: () => qc.invalidateQueries({ queryKey: invalidateKey }),
+  });
+}
+
+/** Upload a `photo` file to a resource (multipart PATCH); refreshes the given query keys. */
+export function useUploadPhoto(invalidateKeys: unknown[][]) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ path, file }: { path: string; file: File }) => {
+      const form = new FormData();
+      form.append("photo", file);
+      return apiUpload(path, form);
+    },
+    onSuccess: () => invalidateKeys.forEach((k) => qc.invalidateQueries({ queryKey: k })),
   });
 }

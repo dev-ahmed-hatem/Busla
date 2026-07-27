@@ -159,6 +159,7 @@
     },
     "profile": {
       "studentId": "رقم الطالب",
+      "changePhoto": "تغيير الصورة",
       "edit": "تعديل",
       "printReport": "طباعة التقرير",
       "tabs": {

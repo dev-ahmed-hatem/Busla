@@ -30,6 +30,7 @@ interface PersonRow {
   route_name: string | null;
   bus_number: string | null;
   status: string;
+  photo: string | null;
 }
 
 export function UsersView() {
@@ -71,7 +72,7 @@ export function UsersView() {
     { key: "series", header: t("cols.series"), render: (_r, i) => <span className="text-slate-500">{(page - 1) * PAGE_SIZE + i + 1}</span> },
     { key: "name", header: t(`person.${tab}`), render: (r) => (
       <div className="flex items-center gap-2">
-        <Avatar name={r.full_name} size={32} />
+        <Avatar name={r.full_name} src={r.photo} size={32} />
         <span className="font-medium text-brand-navy">{r.full_name}</span>
       </div>
     ) },

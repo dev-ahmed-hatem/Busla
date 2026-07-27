@@ -3,7 +3,9 @@
 import { StatusPill } from "@busla/ui";
 import {
   Calendar,
+  Camera,
   GraduationCap,
+  Loader2,
   Mail,
   MapPin,
   Pencil,
@@ -15,13 +17,13 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Tabs } from "@/components/ui/tabs";
-import { useStudent } from "@/lib/api/hooks";
+import { useStudent, useUploadPhoto } from "@/lib/api/hooks";
 import type { Guardian } from "@/lib/api/resources";
 import { humanizeStatus } from "@/lib/utils/status";
 
@@ -73,6 +75,14 @@ export function StudentProfileModal({
   const t = useTranslations("users.profile");
   const [tab, setTab] = useState("personal");
   const { data: student, isLoading } = useStudent(studentId);
+  const upload = useUploadPhoto([["students"], ["users"]]);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const onPickPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && studentId) upload.mutate({ path: `/api/v1/students/${studentId}/`, file });
+    e.target.value = "";
+  };
 
   const dash = "—";
 
@@ -93,7 +103,29 @@ export function StudentProfileModal({
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="w-full shrink-0 md:w-56">
             <div className="flex flex-col items-center gap-3 text-center">
-              <Avatar name={student.full_name} size={96} />
+              <div className="relative">
+                <Avatar name={student.full_name} src={student.photo} size={96} />
+                <button
+                  type="button"
+                  onClick={() => fileInput.current?.click()}
+                  disabled={upload.isPending}
+                  aria-label={t("changePhoto")}
+                  className="absolute -end-1 -bottom-1 grid h-8 w-8 place-items-center rounded-full border-2 border-surface bg-brand-navy text-white hover:opacity-90 disabled:opacity-60"
+                >
+                  {upload.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Camera className="h-4 w-4" />
+                  )}
+                </button>
+                <input
+                  ref={fileInput}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={onPickPhoto}
+                />
+              </div>
               <div>
                 <div className="font-semibold text-brand-navy">{student.full_name}</div>
                 <div className="text-xs text-slate-500">

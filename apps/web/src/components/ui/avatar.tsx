@@ -9,16 +9,31 @@ function initials(name: string): string {
     .join("");
 }
 
-/** Circular initials avatar (stand-in for photos in the design). */
+/** Circular avatar: shows the uploaded photo when `src` is set, else initials. */
 export function Avatar({
   name,
+  src,
   size = 40,
   className,
 }: {
   name: string;
+  src?: string | null;
   size?: number;
   className?: string;
 }) {
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- user-uploaded media, not a static asset
+      <img
+        src={src}
+        alt={name}
+        width={size}
+        height={size}
+        style={{ width: size, height: size }}
+        className={cn("shrink-0 rounded-full object-cover", className)}
+      />
+    );
+  }
   return (
     <span
       aria-hidden

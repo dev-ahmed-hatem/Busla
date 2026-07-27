@@ -20,6 +20,7 @@ export interface Bus {
   status: string;
   breakdown_reason: string;
   last_maintenance_at: string | null;
+  photo: string | null;
   driver_name: string | null;
   route_name: string | null;
 }
@@ -48,6 +49,7 @@ export interface Student {
   route: string | null;
   route_name: string | null;
   status: string;
+  photo: string | null;
   guardians: Guardian[];
 }
 
@@ -63,6 +65,7 @@ export interface Driver {
   bus: string | null;
   bus_number: string | null;
   status: string;
+  photo: string | null;
 }
 
 export interface Supervisor {
@@ -75,6 +78,7 @@ export interface Supervisor {
   bus: string | null;
   bus_number: string | null;
   status: string;
+  photo: string | null;
 }
 
 export type JourneyStatus = "On-time" | "Delayed" | "Broken down" | "Off-route";
@@ -388,6 +392,13 @@ export async function apiPatch<T>(path: string, body: unknown): Promise<T> {
 export async function apiDelete(path: string): Promise<void> {
   const res = await apiFetch(path, { method: "DELETE" });
   if (!res.ok && res.status !== 204) throw await unwrapError(res);
+}
+
+/** Multipart upload (files). Never set Content-Type — the browser adds the boundary. */
+export async function apiUpload<T>(path: string, form: FormData, method = "PATCH"): Promise<T> {
+  const res = await apiFetch(path, { method, body: form });
+  if (!res.ok) throw await unwrapError(res);
+  return res.json() as Promise<T>;
 }
 
 export const PAGE_SIZE = 25;

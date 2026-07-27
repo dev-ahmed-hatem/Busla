@@ -4,6 +4,8 @@ All API routes are versioned under /api/v1/. Modules mount their routers here
 as they are built (people, fleet, routing, …).
 """
 
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -34,3 +36,8 @@ urlpatterns = [
         name="swagger-ui",
     ),
 ]
+
+# Serve uploaded media via Django in DEBUG (local runserver). In production (e.g.
+# PythonAnywhere) media is served by the platform — map /media/ → MEDIA_ROOT in the Web tab.
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

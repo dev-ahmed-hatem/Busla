@@ -45,6 +45,7 @@ class StudentSerializer(_BusNameMixin, serializers.ModelSerializer):
             "route",
             "route_name",
             "status",
+            "photo",
             "guardians",
             "created_at",
             "updated_at",
@@ -73,6 +74,7 @@ class DriverSerializer(_BusNameMixin, serializers.ModelSerializer):
             "bus_number",
             "route_name",
             "status",
+            "photo",
             "created_at",
             "updated_at",
         ]
@@ -98,6 +100,7 @@ class SupervisorSerializer(_BusNameMixin, serializers.ModelSerializer):
             "bus_number",
             "route_name",
             "status",
+            "photo",
             "created_at",
             "updated_at",
         ]

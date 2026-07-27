@@ -21,6 +21,7 @@ class Bus(TenantScopedModel):
     status = models.CharField(max_length=16, choices=Status.choices, default=Status.IN_SERVICE)
     breakdown_reason = models.CharField(max_length=120, blank=True)
     last_maintenance_at = models.DateField(null=True, blank=True)
+    photo = models.ImageField(upload_to="buses/", null=True, blank=True)
 
     class Meta:
         ordering = ["bus_number"]

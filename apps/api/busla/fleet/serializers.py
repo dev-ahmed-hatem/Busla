@@ -21,6 +21,7 @@ class BusSerializer(serializers.ModelSerializer):
             "status",
             "breakdown_reason",
             "last_maintenance_at",
+            "photo",
             "driver_name",
             "route_name",
             "created_at",

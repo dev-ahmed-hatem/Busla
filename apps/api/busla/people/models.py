@@ -35,6 +35,7 @@ class Student(TenantScopedModel):
         "routing.Route", null=True, blank=True, on_delete=models.SET_NULL, related_name="students"
     )
     status = models.CharField(max_length=16, choices=Status.choices, default=Status.SCHEDULED)
+    photo = models.ImageField(upload_to="students/", null=True, blank=True)
 
     class Meta:
         ordering = ["full_name"]
@@ -76,6 +77,7 @@ class Driver(TenantScopedModel):
     bus = models.ForeignKey(
         "fleet.Bus", null=True, blank=True, on_delete=models.SET_NULL, related_name="drivers"
     )
+    photo = models.ImageField(upload_to="drivers/", null=True, blank=True)
     status = models.CharField(max_length=16, choices=StaffStatus.choices, default=StaffStatus.ACTIVE)
 
     class Meta:
@@ -96,6 +98,7 @@ class Supervisor(TenantScopedModel):
     bus = models.ForeignKey(
         "fleet.Bus", null=True, blank=True, on_delete=models.SET_NULL, related_name="supervisors"
     )
+    photo = models.ImageField(upload_to="supervisors/", null=True, blank=True)
     status = models.CharField(max_length=16, choices=StaffStatus.choices, default=StaffStatus.ACTIVE)
 
     class Meta:

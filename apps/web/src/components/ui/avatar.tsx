@@ -22,8 +22,8 @@ export function Avatar({
   className?: string;
 }) {
   if (src) {
+    // Plain <img> (not next/image): src is user-uploaded media from the API host.
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- user-uploaded media, not a static asset
       <img
         src={src}
         alt={name}

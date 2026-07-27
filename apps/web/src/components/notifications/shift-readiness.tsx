@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
 import { Modal } from "@/components/ui/modal";
+import { Loading } from "@/components/ui/spinner";
 import { useRemindDriver, useShiftReadiness, useSubstitutes } from "@/lib/api/hooks";
 import type { CheckInState, DriverCheckin } from "@/lib/api/resources";
 import { cn } from "@/lib/utils/cn";
@@ -24,7 +25,7 @@ function SubstitutesModal({ open, onClose }: { open: boolean; onClose: () => voi
   return (
     <Modal open={open} onClose={onClose} title={t("substitutesTitle")} size="sm">
       {isLoading ? (
-        <div className="py-8 text-center text-sm text-slate-400">…</div>
+        <Loading size={20} />
       ) : !data || data.length === 0 ? (
         <div className="py-8 text-center text-sm text-slate-400">{t("noSubstitutes")}</div>
       ) : (
@@ -92,7 +93,7 @@ export function ShiftReadiness() {
   const [subsOpen, setSubsOpen] = useState(false);
   const { data, isLoading } = useShiftReadiness();
 
-  if (isLoading) return <div className="py-12 text-center text-sm text-slate-400">{t("loading")}</div>;
+  if (isLoading) return <Loading />;
   if (!data || data.checkins.length === 0)
     return <div className="py-12 text-center text-sm text-slate-400">{t("empty")}</div>;
 

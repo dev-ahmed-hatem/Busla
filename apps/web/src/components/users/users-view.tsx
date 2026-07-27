@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
+import { Loading } from "@/components/ui/spinner";
 import { PillTabs, type TabItem } from "@/components/ui/tabs";
 import { useCreate, useDelete, useList } from "@/lib/api/hooks";
 import { PAGE_SIZE } from "@/lib/api/resources";
@@ -115,11 +116,13 @@ export function UsersView() {
 
   const tabItems: TabItem[] = TABS.map((k) => ({ key: k, label: t(`tabs.${k}`) }));
 
-  const emptyLabel = isLoading
-    ? "Loading…"
-    : isError
-      ? (error as Error)?.message || "Failed to load"
-      : "No records yet";
+  const emptyLabel = isLoading ? (
+    <Loading />
+  ) : isError ? (
+    (error as Error)?.message || "Failed to load"
+  ) : (
+    "No records yet"
+  );
 
   return (
     <div>

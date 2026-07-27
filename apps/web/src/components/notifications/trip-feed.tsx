@@ -15,6 +15,8 @@ import { useTranslations } from "next-intl";
 import { useNotifications } from "@/lib/api/hooks";
 import type { TripNotif, TripNotifKind } from "@/lib/api/resources";
 
+import { Loading } from "@/components/ui/spinner";
+
 import { GroupedList, ROW_CLASS, UnreadDot } from "./parts";
 
 const KIND_META: Record<TripNotifKind, { icon: LucideIcon; tone: StatusTone }> = {
@@ -53,7 +55,7 @@ export function TripFeed() {
   const t = useTranslations("notifications");
   const { data, isLoading } = useNotifications();
 
-  if (isLoading) return <div className="py-12 text-center text-sm text-slate-400">{t("loading")}</div>;
+  if (isLoading) return <Loading />;
   if (!data || data.length === 0)
     return <div className="py-12 text-center text-sm text-slate-400">{t("empty")}</div>;
 

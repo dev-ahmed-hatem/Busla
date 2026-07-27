@@ -22,6 +22,7 @@ import { useRef, useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Loading } from "@/components/ui/spinner";
 import { Tabs } from "@/components/ui/tabs";
 import { useStudent, useUploadPhoto } from "@/lib/api/hooks";
 import type { Guardian } from "@/lib/api/resources";
@@ -98,7 +99,7 @@ export function StudentProfileModal({
       </button>
 
       {isLoading || !student ? (
-        <div className="grid place-items-center py-16 text-sm text-slate-400">…</div>
+        <Loading className="py-16" size={28} />
       ) : (
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="w-full shrink-0 md:w-56">

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
+import { Loading } from "@/components/ui/spinner";
 import { useParentRequests } from "@/lib/api/hooks";
 import type { ParentRequestItem } from "@/lib/api/resources";
 
@@ -45,7 +46,7 @@ export function ParentRequestsList() {
   return (
     <>
       {isLoading ? (
-        <div className="py-12 text-center text-sm text-slate-400">{t("loading")}</div>
+        <Loading />
       ) : items.length === 0 ? (
         <div className="py-12 text-center text-sm text-slate-400">{t("empty")}</div>
       ) : (

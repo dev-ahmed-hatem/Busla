@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { Loading } from "@/components/ui/spinner";
 import { useParentRequest, useResolveRequest } from "@/lib/api/hooks";
 
 export function ParentRequestModal({ id, onClose }: { id: string | null; onClose: () => void }) {
@@ -21,7 +22,7 @@ export function ParentRequestModal({ id, onClose }: { id: string | null; onClose
   return (
     <Modal open={!!id} onClose={onClose} title={t("changeDetails")} size="lg">
       {isLoading || !r ? (
-        <div className="py-12 text-center text-sm text-slate-400">…</div>
+        <Loading />
       ) : r.status !== "pending" ? (
         <div className="grid place-items-center py-12 text-center">
           <div className="text-sm font-semibold text-brand-navy">

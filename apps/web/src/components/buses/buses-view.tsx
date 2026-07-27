@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
+import { Loading } from "@/components/ui/spinner";
 import { useCreate, useDelete, useList, useUpdate } from "@/lib/api/hooks";
 import { PAGE_SIZE, type Bus } from "@/lib/api/resources";
 import { cn } from "@/lib/utils/cn";
@@ -81,11 +82,13 @@ export function BusesView() {
     ) },
   ];
 
-  const emptyLabel = isLoading
-    ? "Loading…"
-    : isError
-      ? (error as Error)?.message || "Failed to load buses"
-      : "No buses yet";
+  const emptyLabel = isLoading ? (
+    <Loading />
+  ) : isError ? (
+    (error as Error)?.message || "Failed to load buses"
+  ) : (
+    "No buses yet"
+  );
 
   return (
     <div>

@@ -27,16 +27,21 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="insecure-dev-key-change-me")
 DEBUG = env("DJANGO_DEBUG")
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS")
 
+# --- Feature flags ---
+# The first release runs a lean WSGI stack on SQLite. The realtime (Channels/Daphne) and
+# background (Celery) stacks turn on when Phase 4 lands + Redis is available. GIS/PostGIS
+# (used by geographic Zones) arrives with route optimization in Phase 3.
+USE_ASYNC = env.bool("USE_ASYNC", default=False)
+
 # --- Applications ---
 DJANGO_APPS = [
-    "daphne",  # must precede staticfiles for ASGI runserver
+    *(["daphne"] if USE_ASYNC else []),  # must precede staticfiles for ASGI runserver
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.gis",  # PostGIS
 ]
 
 THIRD_PARTY_APPS = [
@@ -46,7 +51,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "corsheaders",
     "drf_spectacular",
-    "channels",
+    *(["channels"] if USE_ASYNC else []),
 ]
 
 # Bounded-context apps. Phase 0 enables the foundation; later phases append.
@@ -55,6 +60,8 @@ LOCAL_APPS = [
     "busla.tenancy",
     "busla.accounts",
     "busla.health",
+    "busla.fleet",
+    "busla.people",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -95,13 +102,12 @@ TEMPLATES = [
 ]
 
 # --- Database ---
-# The DATABASE_URL scheme selects the engine: `postgis://` → PostGIS (Docker/prod),
-# `spatialite://` → SpatiaLite over SQLite (PythonAnywhere first release). django-environ
-# maps both to the correct django.contrib.gis backend, so we don't override ENGINE here.
+# Default: plain SQLite (first release / local). Set DATABASE_URL=postgres://… for Postgres,
+# or postgis://… once GIS lands in Phase 3. The scheme selects the engine (django-environ).
 DATABASES = {
     "default": env.db_url(
         "DATABASE_URL",
-        default="postgis://busla:busla@localhost:5432/busla",
+        default="sqlite:///" + str(BASE_DIR / "db.sqlite3"),
     ),
 }
 
@@ -159,18 +165,24 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
-    "ENUM_NAME_OVERRIDES": {},
-}
-
-# --- Channels (realtime) ---
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [env("CHANNELS_REDIS_URL", default="redis://localhost:6379/1")],
-        },
+    # Disambiguate the several models that each expose a `status` choice set.
+    "ENUM_NAME_OVERRIDES": {
+        "BusStatusEnum": "busla.fleet.models.Bus.Status",
+        "StaffStatusEnum": "busla.people.models.StaffStatus",
+        "StudentStatusEnum": "busla.people.models.Student.Status",
     },
 }
+
+# --- Channels (realtime, Phase 4) ---
+if USE_ASYNC:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [env("CHANNELS_REDIS_URL", default="redis://localhost:6379/1")],
+            },
+        },
+    }
 
 # --- Celery ---
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://localhost:6379/2")
@@ -192,13 +204,17 @@ CORS_ALLOWED_ORIGINS = env.list(
     default=["http://localhost:3000"],
 )
 
-# --- Cache (Redis) ---
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": env("REDIS_URL", default="redis://localhost:6379/0"),
-    },
-}
+# --- Cache ---
+# Local-memory by default (no Redis needed for the lean release); set REDIS_URL to use Redis.
+if env("REDIS_URL", default=""):
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": env("REDIS_URL"),
+        },
+    }
+else:
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
 # --- Google Maps / optimizer ---
 GOOGLE_MAPS_SERVER_KEY = env("GOOGLE_MAPS_SERVER_KEY", default="")

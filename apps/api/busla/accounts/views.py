@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from drf_spectacular.utils import OpenApiResponse, extend_schema
@@ -39,7 +40,14 @@ class RefreshView(TokenRefreshView):
 
 
 class LogoutView(APIView):
-    """POST {refresh} → blacklist it. Idempotent-ish (invalid token → 205)."""
+    """POST {refresh} → blacklist it. Idempotent-ish (invalid token → 205).
+
+    AllowAny: possessing the refresh token is sufficient to revoke it, and the web BFF
+    calls this with the refresh cookie but no bearer token.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes: list = []
 
     @extend_schema(request=None, responses={205: OpenApiResponse(description="Logged out")})
     def post(self, request: Request) -> Response:
@@ -93,9 +101,11 @@ class PasswordResetRequestView(APIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             # Dev: console email backend prints this. Prod: send a real templated email.
-            user.email_user(
+            send_mail(
                 subject="BUSLA password reset",
                 message=f"Reset token: uid={uid} token={token}",
+                from_email=None,
+                recipient_list=[user.email],
             )
         # Always 200 — never reveal whether an email exists.
         return Response(status=status.HTTP_200_OK)

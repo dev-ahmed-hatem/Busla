@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+from rest_framework import serializers
+
+from .models import Driver, Guardian, Student, Supervisor
+
+
+class _BusNameMixin(serializers.Serializer):
+    bus_number = serializers.SerializerMethodField()
+
+    def get_bus_number(self, obj) -> str | None:
+        return obj.bus.bus_number if obj.bus_id else None
+
+
+class GuardianSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Guardian
+        fields = ["id", "student", "name", "relationship", "phone", "email", "is_primary"]
+        read_only_fields = ["id"]
+
+
+class StudentSerializer(_BusNameMixin, serializers.ModelSerializer):
+    guardians = GuardianSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Student
+        fields = [
+            "id",
+            "full_name",
+            "date_of_birth",
+            "grade",
+            "class_name",
+            "area",
+            "address",
+            "phone",
+            "bus",
+            "bus_number",
+            "status",
+            "guardians",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "bus_number", "guardians", "created_at", "updated_at"]
+
+
+class DriverSerializer(_BusNameMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = [
+            "id",
+            "full_name",
+            "phone",
+            "national_id",
+            "license_number",
+            "license_expiry",
+            "experience_years",
+            "area",
+            "bus",
+            "bus_number",
+            "status",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "bus_number", "created_at", "updated_at"]
+
+
+class SupervisorSerializer(_BusNameMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Supervisor
+        fields = [
+            "id",
+            "full_name",
+            "phone",
+            "national_id",
+            "area",
+            "address",
+            "bus",
+            "bus_number",
+            "status",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "bus_number", "created_at", "updated_at"]

@@ -14,8 +14,8 @@ from drf_spectacular.views import (
 api_v1 = [
     path("health/", include("busla.health.urls")),
     path("auth/", include("busla.accounts.urls")),          # Phase 1
-    # path("", include("busla.people.urls")),               # Phase 2
-    # path("", include("busla.fleet.urls")),                # Phase 2
+    path("", include("busla.fleet.urls")),                  # Phase 2
+    path("", include("busla.people.urls")),                 # Phase 2
     # path("", include("busla.routing.urls")),              # Phase 3
     # path("", include("busla.trips.urls")),                # Phase 4
     # path("", include("busla.notifications.urls")),        # Phase 5

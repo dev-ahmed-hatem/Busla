@@ -6,7 +6,6 @@ every tenant-scoped row carries a `school` FK (see common.TenantScopedModel).
 
 from __future__ import annotations
 
-from django.contrib.gis.db import models as gis
 from django.db import models
 
 from busla.common.models import BaseModel, TenantScopedModel
@@ -25,12 +24,16 @@ class School(BaseModel):
 
 
 class Zone(TenantScopedModel):
-    """Residential area (New Cairo, Shorouk, Madinaty, Al-Narjis, …)."""
+    """Residential area (New Cairo, Shorouk, Madinaty, Al-Narjis, …).
+
+    boundary/centroid hold GeoJSON for now; they become real PostGIS geometry
+    (PolygonField/PointField) when route optimization lands in Phase 3.
+    """
 
     name = models.CharField(max_length=120)
     name_ar = models.CharField(max_length=120, blank=True)
-    boundary = gis.PolygonField(null=True, blank=True, srid=4326)
-    centroid = gis.PointField(null=True, blank=True, srid=4326)
+    boundary = models.JSONField(null=True, blank=True)
+    centroid = models.JSONField(null=True, blank=True)
 
     class Meta:
         unique_together = [("school", "name")]

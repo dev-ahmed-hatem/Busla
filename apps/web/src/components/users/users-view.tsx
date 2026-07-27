@@ -11,91 +11,104 @@ import { Card } from "@/components/ui/card";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
 import { PillTabs, type TabItem } from "@/components/ui/tabs";
-import { USER_ROWS, type UserRow, type UserTab } from "@/lib/mock/users";
+import { useCreate, useDelete, useList } from "@/lib/api/hooks";
+import { PAGE_SIZE } from "@/lib/api/resources";
+import { humanizeStatus } from "@/lib/utils/status";
 
 import { AddUserModal } from "./add-user-modal";
 import { StudentProfileModal } from "./student-profile-modal";
 
+type UserTab = "students" | "drivers" | "supervisors";
 const TABS: UserTab[] = ["students", "drivers", "supervisors"];
+
+interface PersonRow {
+  id: string;
+  full_name: string;
+  phone: string;
+  area: string;
+  bus_number: string | null;
+  status: string;
+}
 
 export function UsersView() {
   const t = useTranslations("users");
   const [tab, setTab] = useState<UserTab>("students");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const rows = USER_ROWS[tab];
+  const path = `/api/v1/${tab}/`;
+  const key = ["users", tab];
+  const query = { search: search || undefined, page };
+
+  const { data, isLoading, isError, error } = useList<PersonRow>([...key, query], path, query);
+  const create = useCreate<PersonRow>(key, path);
+  const del = useDelete(key);
+
+  const rows = data?.results ?? [];
+  const pageCount = Math.max(1, Math.ceil((data?.count ?? 0) / PAGE_SIZE));
   const selectionMode = selected.size > 0;
 
-  const changeTab = (key: string) => {
-    setTab(key as UserTab);
+  const changeTab = (k: string) => {
+    setTab(k as UserTab);
     setSelected(new Set());
+    setSearch("");
     setPage(1);
   };
 
-  const tabItems: TabItem[] = TABS.map((key) => ({ key, label: t(`tabs.${key}`) }));
+  const bulkDelete = async () => {
+    await Promise.all([...selected].map((id) => del.mutateAsync(`${path}${id}/`)));
+    setSelected(new Set());
+  };
 
-  const columns: Column<UserRow>[] = [
-    { key: "series", header: t("cols.series"), render: (r) => <span className="text-slate-500">{r.series}</span> },
-    {
-      key: "name",
-      header: t(`person.${tab}`),
-      render: (r) => (
-        <div className="flex items-center gap-2">
-          <Avatar name={r.name} size={32} />
-          <span className="font-medium text-brand-navy">{r.name}</span>
-        </div>
-      ),
-    },
-    { key: "phone", header: t("cols.phone"), render: (r) => <span className="text-slate-600">{r.phone}</span> },
-    { key: "area", header: t("cols.area"), render: (r) => <span className="text-slate-600">{r.area}</span> },
-    {
-      key: "route",
-      header: t("cols.route"),
-      render: (r) =>
-        r.route ? (
-          <span className="text-slate-600">{r.route}</span>
-        ) : (
-          <span className="tracking-widest text-slate-300">----------</span>
-        ),
-    },
-    {
-      key: "bus",
-      header: t("cols.bus"),
-      render: (r) => (
-        <span className="inline-flex items-center gap-1.5 text-slate-600">
-          <Bus className="h-4 w-4 text-brand-amber" />
-          {r.bus}
-        </span>
-      ),
-    },
-    { key: "status", header: t("cols.status"), render: (r) => <StatusPill status={r.status} /> },
-    {
-      key: "actions",
-      header: t("cols.actions"),
-      render: () => (
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => tab === "students" && setProfileOpen(true)}
-            aria-label="View"
-            className="grid h-8 w-8 place-items-center rounded-md text-slate-500 hover:bg-slate-100"
-          >
-            <Eye className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            aria-label="Delete"
-            className="grid h-8 w-8 place-items-center rounded-md text-status-issue hover:bg-[#fdecec]"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      ),
-    },
+  const columns: Column<PersonRow>[] = [
+    { key: "series", header: t("cols.series"), render: (_r, i) => <span className="text-slate-500">{(page - 1) * PAGE_SIZE + i + 1}</span> },
+    { key: "name", header: t(`person.${tab}`), render: (r) => (
+      <div className="flex items-center gap-2">
+        <Avatar name={r.full_name} size={32} />
+        <span className="font-medium text-brand-navy">{r.full_name}</span>
+      </div>
+    ) },
+    { key: "phone", header: t("cols.phone"), render: (r) => <span className="text-slate-600">{r.phone || "—"}</span> },
+    { key: "area", header: t("cols.area"), render: (r) => <span className="text-slate-600">{r.area || "—"}</span> },
+    { key: "bus", header: t("cols.bus"), render: (r) => (
+      <span className="inline-flex items-center gap-1.5 text-slate-600">
+        <Bus className="h-4 w-4 text-brand-amber" />
+        {r.bus_number ?? "—"}
+      </span>
+    ) },
+    { key: "status", header: t("cols.status"), render: (r) => <StatusPill status={r.status} label={humanizeStatus(r.status)} /> },
+    { key: "actions", header: t("cols.actions"), render: (r) => (
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => tab === "students" && setProfileOpen(true)}
+          aria-label={t("cols.actions")}
+          className="grid h-8 w-8 place-items-center rounded-md text-slate-500 hover:bg-slate-100"
+        >
+          <Eye className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => del.mutate(`${path}${r.id}/`)}
+          aria-label="Delete"
+          className="grid h-8 w-8 place-items-center rounded-md text-status-issue hover:bg-[#fdecec]"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    ) },
   ];
+
+  const tabItems: TabItem[] = TABS.map((k) => ({ key: k, label: t(`tabs.${k}`) }));
+
+  const emptyLabel = isLoading
+    ? "Loading…"
+    : isError
+      ? (error as Error)?.message || "Failed to load"
+      : "No records yet";
 
   return (
     <div>
@@ -109,11 +122,7 @@ export function UsersView() {
               <span className="text-sm text-slate-500">
                 {t("selected", { count: selected.size })}
                 {" · "}
-                <button
-                  type="button"
-                  className="text-status-info"
-                  onClick={() => setSelected(new Set())}
-                >
+                <button type="button" className="text-status-info" onClick={() => setSelected(new Set())}>
                   {t("clearSelection")}
                 </button>
               </span>
@@ -125,8 +134,10 @@ export function UsersView() {
               <Search className="pointer-events-none absolute inset-y-0 start-3 my-auto h-4 w-4 text-slate-400" />
               <input
                 type="search"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder={t("search")}
-                className="h-9 w-48 rounded-md border border-border bg-surface ps-9 pe-3 text-sm outline-none focus:border-brand-navy"
+                className="h-9 w-40 rounded-md border border-border bg-surface ps-9 pe-3 text-sm outline-none focus:border-brand-navy sm:w-48"
               />
             </div>
             <Button variant="outline">
@@ -139,7 +150,7 @@ export function UsersView() {
                   <Download className="h-4 w-4" />
                   {t("export")}
                 </Button>
-                <Button variant="danger">
+                <Button variant="danger" onClick={bulkDelete}>
                   <Trash2 className="h-4 w-4" />
                   {t("deleteAll")}
                 </Button>
@@ -166,14 +177,24 @@ export function UsersView() {
           selectable
           selected={selected}
           onSelectedChange={setSelected}
+          emptyLabel={emptyLabel}
         />
 
         <div className="mt-4 flex justify-center border-t border-border pt-4">
-          <Pagination page={page} pageCount={10} onPageChange={setPage} />
+          <Pagination page={page} pageCount={pageCount} onPageChange={setPage} />
         </div>
       </Card>
 
-      <AddUserModal tab={tab} open={addOpen} onClose={() => setAddOpen(false)} />
+      <AddUserModal
+        tab={tab}
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        submitting={create.isPending}
+        onSubmit={async (values) => {
+          await create.mutateAsync(values);
+          setAddOpen(false);
+        }}
+      />
       <StudentProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );

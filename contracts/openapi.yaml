@@ -2,38 +2,1419 @@ openapi: 3.0.3
 info:
   title: BUSLA API
   version: 0.1.0
-  description: |
-    School-bus fleet operations & real-time tracking platform.
-
-    THIS FILE IS THE SOURCE OF TRUTH for the TypeScript and Dart API clients.
-    It is regenerated from the Django backend via `make openapi`
-    (drf-spectacular). Do not edit by hand except for this Phase-0 bootstrap
-    entry — CI fails if it drifts from the backend (`make diff-check`).
-servers:
-  - url: http://localhost:8000
-    description: Local
+  description: School-bus fleet operations & real-time tracking platform.
 paths:
+  /api/v1/auth/devices/:
+    post:
+      operationId: v1_auth_devices_create
+      description: Register/refresh this user's push token (FCM/APNs).
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceRegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeviceRegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeviceRegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceRegister'
+          description: ''
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create
+      description: POST email+password → {access, refresh, user}.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/logout/:
+    post:
+      operationId: v1_auth_logout_create
+      description: |-
+        POST {refresh} → blacklist it. Idempotent-ish (invalid token → 205).
+
+        AllowAny: possessing the refresh token is sufficient to revoke it, and the web BFF
+        calls this with the refresh cookie but no bearer token.
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '205':
+          description: Logged out
+  /api/v1/auth/me/:
+    get:
+      operationId: auth_me
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/auth/password-reset/:
+    post:
+      operationId: v1_auth_password_reset_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          description: Reset email sent if the account exists
+  /api/v1/auth/password-reset/confirm/:
+    post:
+      operationId: v1_auth_password_reset_confirm_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          description: Password updated
+  /api/v1/auth/refresh/:
+    post:
+      operationId: v1_auth_refresh_create
+      description: POST {refresh} → {access} (rotating; old refresh blacklisted).
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/buses/:
+    get:
+      operationId: v1_buses_list
+      description: CRUD for buses, scoped to the admin's school.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - in_service
+          - issue
+          - maintenance
+        description: |-
+          * `in_service` - In Service
+          * `maintenance` - Maintenance
+          * `issue` - Issue
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBusList'
+          description: ''
+    post:
+      operationId: v1_buses_create
+      description: CRUD for buses, scoped to the admin's school.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BusRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BusRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bus'
+          description: ''
+  /api/v1/buses/{id}/:
+    get:
+      operationId: v1_buses_retrieve
+      description: CRUD for buses, scoped to the admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this bus.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bus'
+          description: ''
+    put:
+      operationId: v1_buses_update
+      description: CRUD for buses, scoped to the admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this bus.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BusRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BusRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bus'
+          description: ''
+    patch:
+      operationId: v1_buses_partial_update
+      description: CRUD for buses, scoped to the admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this bus.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBusRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBusRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBusRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bus'
+          description: ''
+    delete:
+      operationId: v1_buses_destroy
+      description: CRUD for buses, scoped to the admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this bus.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/drivers/:
+    get:
+      operationId: v1_drivers_list
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: query
+        name: area
+        schema:
+          type: string
+      - in: query
+        name: bus
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - absent
+          - active
+          - off_duty
+        description: |-
+          * `active` - Active
+          * `off_duty` - Off-Duty
+          * `absent` - Absent
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDriverList'
+          description: ''
+    post:
+      operationId: v1_drivers_create
+      description: CRUD viewset scoped to the authenticated admin's school.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+          description: ''
+  /api/v1/drivers/{id}/:
+    get:
+      operationId: v1_drivers_retrieve
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this driver.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+          description: ''
+    put:
+      operationId: v1_drivers_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this driver.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+          description: ''
+    patch:
+      operationId: v1_drivers_partial_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this driver.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+          description: ''
+    delete:
+      operationId: v1_drivers_destroy
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this driver.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/guardians/:
+    get:
+      operationId: v1_guardians_list
+      description: Guardians are scoped through their student's school.
+      parameters:
+      - in: query
+        name: is_primary
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: relationship
+        schema:
+          type: string
+          enum:
+          - father
+          - mother
+          - other
+        description: |-
+          * `mother` - Mother
+          * `father` - Father
+          * `other` - Other
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: student
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGuardianList'
+          description: ''
+    post:
+      operationId: v1_guardians_create
+      description: Guardians are scoped through their student's school.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardianRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GuardianRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuardianRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardian'
+          description: ''
+  /api/v1/guardians/{id}/:
+    get:
+      operationId: v1_guardians_retrieve
+      description: Guardians are scoped through their student's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this guardian.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardian'
+          description: ''
+    put:
+      operationId: v1_guardians_update
+      description: Guardians are scoped through their student's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this guardian.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardianRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GuardianRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuardianRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardian'
+          description: ''
+    patch:
+      operationId: v1_guardians_partial_update
+      description: Guardians are scoped through their student's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this guardian.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGuardianRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGuardianRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGuardianRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guardian'
+          description: ''
+    delete:
+      operationId: v1_guardians_destroy
+      description: Guardians are scoped through their student's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this guardian.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/health/:
     get:
       operationId: health_retrieve
       description: Unauthenticated liveness probe.
-      tags: [health]
+      tags:
+      - v1
+      security:
+      - {}
       responses:
-        "200":
-          description: OK
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Health"
+                $ref: '#/components/schemas/Health'
+          description: ''
+  /api/v1/students/:
+    get:
+      operationId: v1_students_list
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: query
+        name: area
+        schema:
+          type: string
+      - in: query
+        name: bus
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: grade
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - absent
+          - scheduled
+          - unscheduled
+        description: |-
+          * `scheduled` - Scheduled
+          * `absent` - Absent
+          * `unscheduled` - Unscheduled
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentList'
+          description: ''
+    post:
+      operationId: v1_students_create
+      description: CRUD viewset scoped to the authenticated admin's school.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+  /api/v1/students/{id}/:
+    get:
+      operationId: v1_students_retrieve
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    put:
+      operationId: v1_students_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    patch:
+      operationId: v1_students_partial_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    delete:
+      operationId: v1_students_destroy
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/supervisors/:
+    get:
+      operationId: v1_supervisors_list
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: query
+        name: area
+        schema:
+          type: string
+      - in: query
+        name: bus
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - absent
+          - active
+          - off_duty
+        description: |-
+          * `active` - Active
+          * `off_duty` - Off-Duty
+          * `absent` - Absent
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupervisorList'
+          description: ''
+    post:
+      operationId: v1_supervisors_create
+      description: CRUD viewset scoped to the authenticated admin's school.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupervisorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SupervisorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SupervisorRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supervisor'
+          description: ''
+  /api/v1/supervisors/{id}/:
+    get:
+      operationId: v1_supervisors_retrieve
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supervisor.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supervisor'
+          description: ''
+    put:
+      operationId: v1_supervisors_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supervisor.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupervisorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SupervisorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SupervisorRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supervisor'
+          description: ''
+    patch:
+      operationId: v1_supervisors_partial_update
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supervisor.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSupervisorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSupervisorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSupervisorRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supervisor'
+          description: ''
+    delete:
+      operationId: v1_supervisors_destroy
+      description: CRUD viewset scoped to the authenticated admin's school.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this supervisor.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
+    Bus:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        bus_number:
+          type: string
+          maxLength: 32
+        license_plate:
+          type: string
+          maxLength: 32
+        model_name:
+          type: string
+          maxLength: 120
+        capacity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        odometer_km:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/BusStatusEnum'
+        breakdown_reason:
+          type: string
+          maxLength: 120
+        last_maintenance_at:
+          type: string
+          format: date
+          nullable: true
+        driver_name:
+          type: string
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - bus_number
+      - created_at
+      - driver_name
+      - id
+      - updated_at
+    BusRequest:
+      type: object
+      properties:
+        bus_number:
+          type: string
+          minLength: 1
+          maxLength: 32
+        license_plate:
+          type: string
+          maxLength: 32
+        model_name:
+          type: string
+          maxLength: 120
+        capacity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        odometer_km:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/BusStatusEnum'
+        breakdown_reason:
+          type: string
+          maxLength: 120
+        last_maintenance_at:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - bus_number
+    BusStatusEnum:
+      enum:
+      - in_service
+      - maintenance
+      - issue
+      type: string
+      description: |-
+        * `in_service` - In Service
+        * `maintenance` - Maintenance
+        * `issue` - Issue
+    DeviceRegister:
+      type: object
+      properties:
+        token:
+          type: string
+          maxLength: 512
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+      required:
+      - platform
+      - token
+    DeviceRegisterRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 512
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+      required:
+      - platform
+      - token
+    Driver:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        full_name:
+          type: string
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 32
+        national_id:
+          type: string
+          maxLength: 32
+        license_number:
+          type: string
+          maxLength: 64
+        license_expiry:
+          type: string
+          format: date
+          nullable: true
+        experience_years:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        area:
+          type: string
+          maxLength: 120
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        bus_number:
+          type: string
+          nullable: true
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StaffStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - bus_number
+      - created_at
+      - full_name
+      - id
+      - updated_at
+    DriverRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 32
+        national_id:
+          type: string
+          maxLength: 32
+        license_number:
+          type: string
+          maxLength: 64
+        license_expiry:
+          type: string
+          format: date
+          nullable: true
+        experience_years:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        area:
+          type: string
+          maxLength: 120
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StaffStatusEnum'
+      required:
+      - full_name
+    Guardian:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        relationship:
+          $ref: '#/components/schemas/RelationshipEnum'
+        phone:
+          type: string
+          maxLength: 32
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        is_primary:
+          type: boolean
+      required:
+      - id
+      - name
+      - student
+    GuardianRequest:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        relationship:
+          $ref: '#/components/schemas/RelationshipEnum'
+        phone:
+          type: string
+          maxLength: 32
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        is_primary:
+          type: boolean
+      required:
+      - name
+      - student
     Health:
       type: object
-      required: [status, service, version, time]
+      description: Walking-skeleton payload — proves the DRF→OpenAPI→TS/Dart client
+        loop.
       properties:
         status:
-          type: string
-          enum: [ok, degraded]
+          $ref: '#/components/schemas/HealthStatusEnum'
         service:
           type: string
         version:
@@ -41,3 +1422,606 @@ components:
         time:
           type: string
           format: date-time
+      required:
+      - service
+      - status
+      - time
+      - version
+    HealthStatusEnum:
+      enum:
+      - ok
+      - degraded
+      type: string
+      description: |-
+        * `ok` - ok
+        * `degraded` - degraded
+    LocaleEnum:
+      enum:
+      - en
+      - ar
+      type: string
+      description: |-
+        * `en` - en
+        * `ar` - ar
+    LoginRequest:
+      type: object
+      description: Email+password login. Embeds role/school in the token and returns
+        the user.
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    PaginatedBusList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bus'
+    PaginatedDriverList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Driver'
+    PaginatedGuardianList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guardian'
+    PaginatedStudentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'
+    PaginatedSupervisorList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supervisor'
+    PasswordResetConfirmRequest:
+      type: object
+      properties:
+        uid:
+          type: string
+          minLength: 1
+        token:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - new_password
+      - token
+      - uid
+    PasswordResetRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    PatchedBusRequest:
+      type: object
+      properties:
+        bus_number:
+          type: string
+          minLength: 1
+          maxLength: 32
+        license_plate:
+          type: string
+          maxLength: 32
+        model_name:
+          type: string
+          maxLength: 120
+        capacity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        odometer_km:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/BusStatusEnum'
+        breakdown_reason:
+          type: string
+          maxLength: 120
+        last_maintenance_at:
+          type: string
+          format: date
+          nullable: true
+    PatchedDriverRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 32
+        national_id:
+          type: string
+          maxLength: 32
+        license_number:
+          type: string
+          maxLength: 64
+        license_expiry:
+          type: string
+          format: date
+          nullable: true
+        experience_years:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        area:
+          type: string
+          maxLength: 120
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StaffStatusEnum'
+    PatchedGuardianRequest:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        relationship:
+          $ref: '#/components/schemas/RelationshipEnum'
+        phone:
+          type: string
+          maxLength: 32
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        is_primary:
+          type: boolean
+    PatchedStudentRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        grade:
+          type: string
+          maxLength: 32
+        class_name:
+          type: string
+          maxLength: 32
+        area:
+          type: string
+          maxLength: 120
+        address:
+          type: string
+        phone:
+          type: string
+          maxLength: 32
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StudentStatusEnum'
+    PatchedSupervisorRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 32
+        national_id:
+          type: string
+          maxLength: 32
+        area:
+          type: string
+          maxLength: 120
+        address:
+          type: string
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StaffStatusEnum'
+    PlatformEnum:
+      enum:
+      - ios
+      - android
+      type: string
+      description: |-
+        * `ios` - iOS
+        * `android` - Android
+    RelationshipEnum:
+      enum:
+      - mother
+      - father
+      - other
+      type: string
+      description: |-
+        * `mother` - Mother
+        * `father` - Father
+        * `other` - Other
+    StaffStatusEnum:
+      enum:
+      - active
+      - off_duty
+      - absent
+      type: string
+      description: |-
+        * `active` - Active
+        * `off_duty` - Off-Duty
+        * `absent` - Absent
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        full_name:
+          type: string
+          maxLength: 200
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        grade:
+          type: string
+          maxLength: 32
+        class_name:
+          type: string
+          maxLength: 32
+        area:
+          type: string
+          maxLength: 120
+        address:
+          type: string
+        phone:
+          type: string
+          maxLength: 32
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        bus_number:
+          type: string
+          nullable: true
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StudentStatusEnum'
+        guardians:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guardian'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - bus_number
+      - created_at
+      - full_name
+      - guardians
+      - id
+      - updated_at
+    StudentRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        grade:
+          type: string
+          maxLength: 32
+        class_name:
+          type: string
+          maxLength: 32
+        area:
+          type: string
+          maxLength: 120
+        address:
+          type: string
+        phone:
+          type: string
+          maxLength: 32
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StudentStatusEnum'
+      required:
+      - full_name
+    StudentStatusEnum:
+      enum:
+      - scheduled
+      - absent
+      - unscheduled
+      type: string
+      description: |-
+        * `scheduled` - Scheduled
+        * `absent` - Absent
+        * `unscheduled` - Unscheduled
+    Supervisor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        full_name:
+          type: string
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 32
+        national_id:
+          type: string
+          maxLength: 32
+        area:
+          type: string
+          maxLength: 120
+        address:
+          type: string
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        bus_number:
+          type: string
+          nullable: true
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StaffStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - bus_number
+      - created_at
+      - full_name
+      - id
+      - updated_at
+    SupervisorRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 32
+        national_id:
+          type: string
+          maxLength: 32
+        area:
+          type: string
+          maxLength: 120
+        address:
+          type: string
+        bus:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StaffStatusEnum'
+      required:
+      - full_name
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    User:
+      type: object
+      description: Public shape of the current user (used by /me and login response).
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        user_type:
+          allOf:
+          - $ref: '#/components/schemas/UserTypeEnum'
+          readOnly: true
+        locale:
+          allOf:
+          - $ref: '#/components/schemas/LocaleEnum'
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        school:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+      required:
+      - email
+      - full_name
+      - id
+      - locale
+      - phone
+      - school
+      - user_type
+    UserTypeEnum:
+      enum:
+      - ADMIN
+      - DISPATCHER
+      - VIEWER
+      - DRIVER
+      - SUPERVISOR
+      - PARENT
+      type: string
+      description: |-
+        * `ADMIN` - Admin
+        * `DISPATCHER` - Dispatcher
+        * `VIEWER` - Viewer
+        * `DRIVER` - Driver
+        * `SUPERVISOR` - Supervisor
+        * `PARENT` - Parent
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

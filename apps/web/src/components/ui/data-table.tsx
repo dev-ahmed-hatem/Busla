@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils/cn";
 export interface Column<T> {
   key: string;
   header: ReactNode;
-  render?: (row: T) => ReactNode;
+  render?: (row: T, index: number) => ReactNode;
   className?: string;
   headerClassName?: string;
 }
@@ -85,7 +85,7 @@ export function DataTable<T>({
               </td>
             </tr>
           ) : (
-            rows.map((row) => {
+            rows.map((row, index) => {
               const id = rowKey(row);
               const checked = sel.has(id);
               return (
@@ -109,7 +109,7 @@ export function DataTable<T>({
                   )}
                   {columns.map((c) => (
                     <td key={c.key} className={cn("px-3 py-3 align-middle", c.className)}>
-                      {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? "")}
+                      {c.render ? c.render(row, index) : String((row as Record<string, unknown>)[c.key] ?? "")}
                     </td>
                   ))}
                 </tr>

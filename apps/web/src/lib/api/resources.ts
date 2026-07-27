@@ -74,6 +74,29 @@ export interface Supervisor {
   status: string;
 }
 
+export interface Kpi {
+  total: number;
+  active: number;
+  inactive: number;
+  utilization: number;
+}
+
+export interface CapacityRow {
+  bus: string;
+  route: string | null;
+  capacity: number;
+  occupied: number;
+  available: number;
+}
+
+export interface DashboardStats {
+  buses: Kpi;
+  drivers: Kpi;
+  supervisors: Kpi;
+  students: Kpi;
+  bus_capacity: CapacityRow[];
+}
+
 export type QueryParams = Record<string, string | number | undefined>;
 
 function toQuery(params: QueryParams): string {

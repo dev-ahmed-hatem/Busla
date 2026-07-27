@@ -7,11 +7,18 @@ import { useState } from "react";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { CAPACITY_ROWS } from "@/lib/mock/dashboard";
+import { useDashboardStats } from "@/lib/api/hooks";
+
+const PAGE = 5;
 
 export function BusCapacity() {
   const t = useTranslations("dashboard");
   const [page, setPage] = useState(1);
+  const { data } = useDashboardStats();
+
+  const rows = data?.bus_capacity ?? [];
+  const pageCount = Math.max(1, Math.ceil(rows.length / PAGE));
+  const visible = rows.slice((page - 1) * PAGE, page * PAGE);
 
   const occupancyTone = (ratio: number) =>
     ratio >= 0.75 ? "onTime" : ratio >= 0.5 ? "delayed" : "issue";
@@ -42,17 +49,17 @@ export function BusCapacity() {
             </tr>
           </thead>
           <tbody>
-            {CAPACITY_ROWS.map((row) => (
+            {visible.map((row) => (
               <tr key={row.bus} className="border-b border-border last:border-0">
                 <td className="py-3 font-medium text-brand-navy">{row.bus}</td>
-                <td className="py-3 text-slate-600">{row.route}</td>
+                <td className="py-3 text-slate-600">{row.route ?? "—"}</td>
                 <td className="py-3">
                   <div className="flex items-center gap-2">
                     <span className="w-6 text-slate-600">{row.capacity}</span>
                     <div className="w-24">
                       <ProgressBar
-                        percent={(row.occupied / row.capacity) * 100}
-                        tone={occupancyTone(row.occupied / row.capacity)}
+                        percent={row.capacity ? (row.occupied / row.capacity) * 100 : 0}
+                        tone={occupancyTone(row.capacity ? row.occupied / row.capacity : 0)}
                       />
                     </div>
                   </div>
@@ -61,11 +68,18 @@ export function BusCapacity() {
                 <td className="py-3 text-slate-600">{row.available}</td>
               </tr>
             ))}
+            {visible.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-slate-400">
+                  —
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
       <div className="mt-4 flex justify-center border-t border-border pt-4">
-        <Pagination page={page} pageCount={5} onPageChange={setPage} />
+        <Pagination page={page} pageCount={pageCount} onPageChange={setPage} />
       </div>
     </Card>
   );

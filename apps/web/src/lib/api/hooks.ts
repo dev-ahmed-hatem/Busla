@@ -7,11 +7,23 @@ import { useSession } from "@/lib/auth/session";
 import {
   apiCreate,
   apiDelete,
+  apiGet,
   apiList,
   apiPatch,
+  type DashboardStats,
   type Paginated,
   type QueryParams,
 } from "./resources";
+
+/** Dashboard aggregate stats (KPIs + bus capacity). */
+export function useDashboardStats() {
+  const token = useSession((s) => s.accessToken);
+  return useQuery<DashboardStats>({
+    queryKey: ["dashboard-stats"],
+    queryFn: () => apiGet<DashboardStats>("/api/v1/dashboard/stats/"),
+    enabled: !!token,
+  });
+}
 
 /** Paginated list query, disabled until authenticated; keeps previous page while fetching. */
 export function useList<T>(key: unknown[], path: string, params: QueryParams = {}) {

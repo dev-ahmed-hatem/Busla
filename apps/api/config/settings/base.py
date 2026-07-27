@@ -62,6 +62,7 @@ LOCAL_APPS = [
     "busla.health",
     "busla.fleet",
     "busla.people",
+    "busla.dashboard",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

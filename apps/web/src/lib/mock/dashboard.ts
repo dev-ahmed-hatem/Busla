@@ -14,7 +14,7 @@ export interface KpiSubMetric {
 export interface KpiCard {
   key: KpiKey;
   total: number;
-  subs: [KpiSubMetric, KpiSubMetric];
+  subs: KpiSubMetric[];
   /** Utilisation/health percentage shown on the mini bar. */
   percent: number;
 }
